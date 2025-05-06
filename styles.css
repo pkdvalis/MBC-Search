@@ -13,6 +13,7 @@ body {
 
 a {
   color: #1f538a;
+  cursor: pointer;
 }
 
 a:visited {
