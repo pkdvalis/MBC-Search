@@ -174,3 +174,5 @@ const previouslyOn = () => {
     document.getElementById("books").appendChild(newLink);
   }
 };
+
+previouslyOn();
