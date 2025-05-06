@@ -6,7 +6,7 @@ let clearBtn = document.getElementById("clear");
 
 let previously = [
   { title: "The Pelican Brief", author: "John Grisham" },
-  { title: "Eat Pray Love", author: "Elizabeth Gilbert" },
+  { title: "Eat, Pray, Love", author: "Elizabeth Gilbert" },
   { title: "Twilight", author: "Stephenie Meyer" },
   { title: "The Shack", author: "William P. Young" },
   { title: "Crazy House", author: "James Patterson and Gabrielle Charbonnet" },
@@ -14,7 +14,7 @@ let previously = [
   { title: "The Da Vinci Code", author: "Dan Brown" },
   { title: "Malice", author: "Danielle Steel" },
   { title: "Fourth Wing", author: "Rebecca Yarros" },
-  { title: "Hillbilly Elegy", author: "J.D. Vance" },
+  { title: "Hillbilly Elegy", author: "JD Vance" },
   { title: "The Housemaid", author: "Freida McFadden" },
   { title: "Lean In", author: "Sheryl Sandberg" },
   { title: "A Court of Thorns and Roses", author: "Sarah J. Maas" },
@@ -138,14 +138,14 @@ function searchFor(author = "", title = "") {
                 <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank">Internet Search</a><br />
                 </div>`;
 
-        if (list != "none") {
+        if (list != "none" && author && title) {
           for (rank in book.ranks_history) {
             listing += `<p>List: ${book.ranks_history[rank].display_name}<br />
                         Bestsellers Date: ${book.ranks_history[rank].bestsellers_date}</p>`;
           }
         } else {
-          listing += `<p>List: ${list}<br/>
-                    Bestsellers Date: ${bdate}</p>`;
+          //listing += `<p>List: ${list}<br/>
+          // Bestsellers Date: ${bdate}</p>`;
         }
         listing += `</div>`;
         document.getElementById("books").innerHTML += listing;
