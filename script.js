@@ -1,4 +1,4 @@
-const apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+//const apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
 let search = document.getElementById("search");
 
 function searchFor(author = "", title = "") {
