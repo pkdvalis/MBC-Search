@@ -1,5 +1,7 @@
 let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
 let search = document.getElementById("search");
+let searchAuthor = document.getElementById("author");
+let searchTitle = document.getElementById("title");
 
 let previously = [
   { title: "The Pelican Brief", author: "John Grisham" },
@@ -79,7 +81,9 @@ let previously = [
 ];
 
 function searchFor(author = "", title = "") {
-  //console.log("search launch", author, title)
+  searchAuthor.value = author;
+  searchTitle.value = title;
+
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
       `${author}&title=${title}&api-key=${apiKey}`,
@@ -98,7 +102,7 @@ function searchFor(author = "", title = "") {
         let bdate = "none";
         let firstListing = "none";
 
-        console.log(book);
+        //console.log(book);
 
         let bookInfo = book;
         firstListing = book.ranks_history?.length - 1;
@@ -106,8 +110,10 @@ function searchFor(author = "", title = "") {
         bdate = book.ranks_history[firstListing]?.bestsellers_date || "none";
 
         let listing = `<div class="entry"><div class="content">
-                <h2>${bookInfo.title}</h2>
-                <h4>By ${bookInfo.author}</h4>
+                <h2><a onclick="searchFor('${book.author}', '${book.title}')">
+                ${bookInfo.title}</h2></a>
+                <h4>By <a onclick="searchFor('${book.author}')">
+                ${bookInfo.author}</a></h4>
                 <h4 class="publisher">${bookInfo.publisher}</h4>
                 <p class="listdate">${bookInfo.description}</p>
                 <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank">Audible Search</a><br />
@@ -131,15 +137,26 @@ function searchFor(author = "", title = "") {
         listing += `</div>`;
         document.getElementById("books").innerHTML += listing;
       });
+    })
+    .catch((error) => {
+      console.log("Error CATCH");
+      document.getElementById("books").innerHTML = `
+      
+      <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
+        Hold your horses!<br /><br />
+        The New York Times limits the number of requests that we can send to the database. 
+        By the time you're done reading this you can probably try again.<br /><br />
+        If not, just wait longer.
+      
+        `;
+
+      console.log(error);
     });
 }
 
 search.addEventListener("submit", (e) => {
   e.preventDefault();
-  searchFor(
-    document.getElementById("author").value,
-    document.getElementById("title").value
-  );
+  searchFor(searchAuthor.value, searchTitle.value);
 });
 
 document.getElementById("books").innerHTML = "Previously on Mean Book Club:";
