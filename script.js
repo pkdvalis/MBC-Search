@@ -2,6 +2,7 @@ let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
 let search = document.getElementById("search");
 let searchAuthor = document.getElementById("author");
 let searchTitle = document.getElementById("title");
+let clearBtn = document.getElementById("clear");
 
 let previously = [
   { title: "The Pelican Brief", author: "John Grisham" },
@@ -160,6 +161,11 @@ function searchFor(author = "", title = "") {
 search.addEventListener("submit", (e) => {
   e.preventDefault();
   searchFor(searchAuthor.value, searchTitle.value);
+});
+
+clearBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  searchFor();
 });
 
 const previouslyOn = () => {
