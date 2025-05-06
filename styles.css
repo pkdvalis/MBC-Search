@@ -28,7 +28,8 @@ form {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 15px;
   width: 100%;
   max-width: 1200px;
@@ -50,6 +51,16 @@ form input[type="text"] {
 }
 
 form input[type="submit"] {
+  background-color: #1057a3;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+form input[type="button"] {
   background-color: #1057a3;
   color: white;
   padding: 10px;

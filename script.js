@@ -131,8 +131,7 @@ function searchFor(author = "", title = "") {
         if (list != "none") {
           for (rank in book.ranks_history) {
             listing += `<p>List: ${book.ranks_history[rank].display_name}<br />
-                                    Bestsellers Date: ${book.ranks_history[rank].bestsellers_date}</p>`;
-            //listing += rank.display_name
+                        Bestsellers Date: ${book.ranks_history[rank].bestsellers_date}</p>`;
           }
         } else {
           listing += `<p>List: ${list}<br/>
