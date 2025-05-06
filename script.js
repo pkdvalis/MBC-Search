@@ -83,6 +83,10 @@ let previously = [
 function searchFor(author = "", title = "") {
   searchAuthor.value = author;
   searchTitle.value = title;
+  if (!author && !title) {
+    previouslyOn();
+    return;
+  }
 
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
@@ -159,12 +163,14 @@ search.addEventListener("submit", (e) => {
   searchFor(searchAuthor.value, searchTitle.value);
 });
 
-document.getElementById("books").innerHTML = "Previously on Mean Book Club:";
-for (let book of previously) {
-  //console.log(book.title)
+const previouslyOn = () => {
+  document.getElementById("books").innerHTML = "Previously on Mean Book Club:";
+  for (let book of previously) {
+    //console.log(book.title)
 
-  let newLink = document.createElement("a");
-  newLink.onclick = () => searchFor(`${book.author}`, `${book.title}`);
-  newLink.innerText = `${book.title} by ${book.author}`;
-  document.getElementById("books").appendChild(newLink);
-}
+    let newLink = document.createElement("a");
+    newLink.onclick = () => searchFor(`${book.author}`, `${book.title}`);
+    newLink.innerText = `${book.title} by ${book.author}`;
+    document.getElementById("books").appendChild(newLink);
+  }
+};
