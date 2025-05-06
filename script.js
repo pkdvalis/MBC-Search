@@ -1,3 +1,4 @@
+let apiKey = process.env.apiKey;
 let search = document.getElementById("search");
 
 function searchFor(author = "", title = "") {
