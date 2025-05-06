@@ -101,6 +101,15 @@ function searchFor(author = "", title = "") {
       document.getElementById("books").innerHTML = "";
 
       let nytimesBestSellers = json;
+      if (nytimesBestSellers.results.length == 0) {
+        document.getElementById("books").innerHTML = `
+      
+      <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3g5dWk3N3M3NzB5emFvNGEyMHI4N3kwcmZseTk3dmVmNXl4Y3RjNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tsRqkQCs972nTvtojc/giphy.gif"><br />
+        No entries found<br />
+        
+        `;
+      }
+
       nytimesBestSellers.results.forEach((book) => {
         //reset
         let list = "none";
