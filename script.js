@@ -144,7 +144,7 @@ function searchFor(author = "", title = "") {
                         Bestsellers Date: ${book.ranks_history[rank].bestsellers_date}</p>`;
           }
         } else {
-          //listing += `<p>List: ${list}<br/>
+          listing += `<p>Click book title for details<br/>
           // Bestsellers Date: ${bdate}</p>`;
         }
         listing += `</div>`;
