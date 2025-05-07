@@ -125,8 +125,8 @@ function searchFor(author = "", title = "") {
           getDetails(book.author, book.title);
         }
 
-        firstListing = book.ranks_history?.length - 1;
-        list = book.ranks_history[firstListing]?.display_name || "none";
+        let firstListing = book.ranks_history?.length - 1;
+        let list = book.ranks_history[firstListing]?.display_name || "none";
 
         let listing = `<div class="entry"><div class="content">
                       <h2><a onclick="getDetails('${book.author}', '${book.title}')">
@@ -196,8 +196,8 @@ const getDetails = (author = "", title = "") => {
       nytimesBestSellers.results.forEach((book) => {
         if (book.title != title) return;
 
-        firstListing = book.ranks_history?.length - 1;
-        list = book.ranks_history[firstListing]?.display_name || "none";
+        let firstListing = book.ranks_history?.length - 1;
+        let list = book.ranks_history[firstListing]?.display_name || "none";
 
         let listing = `<div class="entry"><div class="content">
                 <h2><a onclick="getDetails('${book.author}', '${book.title}')">
@@ -215,7 +215,7 @@ const getDetails = (author = "", title = "") => {
                 </div>`;
 
         if (list != "none") {
-          for (i in book.ranks_history) {
+          for (let i in book.ranks_history) {
             listing += `<p>List: ${book.ranks_history[i].display_name}<br />
                         Bestsellers Date: ${book.ranks_history[i].bestsellers_date}</p>`;
           }
