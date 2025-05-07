@@ -121,6 +121,10 @@ function searchFor(author = "", title = "") {
       }
 
       nytimesBestSellers.results.forEach((book) => {
+        if (nytimesBestSellers.results.length == 1) {
+          getDetails(book.author, book.title);
+        }
+
         firstListing = book.ranks_history?.length - 1;
         list = book.ranks_history[firstListing]?.display_name || "none";
 
@@ -134,10 +138,8 @@ function searchFor(author = "", title = "") {
                       </div>`;
 
         if (list != "none" && author && title) {
-          for (i in book.ranks_history) {
-            listing += `<p>List: ${book.ranks_history[i].display_name}<br />
-                        Bestsellers Date: ${book.ranks_history[i].bestsellers_date}</p>`;
-          }
+          listing += `<p>List: ${book.ranks_history[firstListing]?.display_name}<br />
+                        Bestsellers Date: ${book.ranks_history[firstListing]?.bestsellers_date}</p>`;
         }
 
         listing += `<p>Click book title for details</p>`;
