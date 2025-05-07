@@ -1,14 +1,18 @@
 let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+//let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv"
+//let apikeyinput = document.getElementById("apikeyinput")
+//let apiKey = apikeyinput.value;
 let search = document.getElementById("search");
 let searchAuthor = document.getElementById("author");
 let searchTitle = document.getElementById("title");
 let clearBtn = document.getElementById("clear");
+let nytimesBestSellers;
 
 let previously = [
   { title: "The Pelican Brief", author: "John Grisham" },
   { title: "Eat, Pray, Love", author: "Elizabeth Gilbert" },
   { title: "Twilight", author: "Stephenie Meyer" },
-  { title: "The Shack", author: "William P. Young" },
+  { title: "The Shack", author: "William P Young" },
   { title: "Crazy House", author: "James Patterson and Gabrielle Charbonnet" },
   { title: "The Secret", author: "Rhonda Byrne" },
   { title: "The Da Vinci Code", author: "Dan Brown" },
@@ -80,8 +84,86 @@ let previously = [
   { title: "Relentless", author: "Dean Koontz" },
   { title: "L.A. Candy", author: "Lauren Conrad" },
 ];
+/*
+apikeyinput.addEventListener("change", () => {
+  apiKey = apikeyinput.value
+  
+})*/
 
 function searchFor(author = "", title = "") {
+  searchAuthor.value = author;
+  searchTitle.value = title;
+
+  if (!author && !title) {
+    previouslyOn();
+    return;
+  }
+
+  fetch(
+    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
+      `${author}&title=${title}&api-key=${apiKey}`,
+    { method: "get" }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .then((nytimesBestSellers) => {
+      document.getElementById("books").innerHTML = "";
+
+      //no entries found
+      if (nytimesBestSellers.results.length == 0) {
+        document.getElementById("books").innerHTML = `
+      
+      <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"><br />
+        No entries found<br />
+        
+        `;
+      }
+
+      nytimesBestSellers.results.forEach((book) => {
+        firstListing = book.ranks_history?.length - 1;
+        list = book.ranks_history[firstListing]?.display_name || "none";
+
+        let listing = `<div class="entry"><div class="content">
+                      <h2><a onclick="getDetails('${book.author}', '${book.title}')">
+                      ${book.title}</h2></a>
+                      <h4>By <a onclick="searchFor('${book.author}')">
+                      ${book.author}</a></h4>
+                      <h4 class="publisher">${book.publisher}</h4>
+                      <p class="description">${book.description}</p>
+                      </div>`;
+
+        if (list != "none" && author && title) {
+          for (i in book.ranks_history) {
+            listing += `<p>List: ${book.ranks_history[i].display_name}<br />
+                        Bestsellers Date: ${book.ranks_history[i].bestsellers_date}</p>`;
+          }
+        }
+
+        listing += `<p>Click book title for details</p>`;
+        listing += `</div>`;
+        document.getElementById("books").innerHTML += listing;
+      });
+    })
+    .catch((error) => {
+      console.log("Error CATCH");
+      document.getElementById("books").innerHTML = `
+      
+      <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
+        Hold your horses!<br /><br />
+
+        The New York Times limits the number of requests that we can send to the database. 
+        By the time you're done reading this you can probably try again.<br /><br />
+
+        If not, just wait longer.
+      
+        `;
+
+      console.log(error);
+    });
+}
+
+const getDetails = (author = "", title = "") => {
   searchAuthor.value = author;
   searchTitle.value = title;
   if (!author && !title) {
@@ -97,10 +179,9 @@ function searchFor(author = "", title = "") {
     .then((response) => {
       return response.json();
     })
-    .then((json) => {
+    .then((nytimesBestSellers) => {
       document.getElementById("books").innerHTML = "";
 
-      let nytimesBestSellers = json;
       if (nytimesBestSellers.results.length == 0) {
         document.getElementById("books").innerHTML = `
       
@@ -111,25 +192,18 @@ function searchFor(author = "", title = "") {
       }
 
       nytimesBestSellers.results.forEach((book) => {
-        //reset
-        let list = "none";
-        let bdate = "none";
-        let firstListing = "none";
+        if (book.title != title) return;
 
-        //console.log(book);
-
-        let bookInfo = book;
         firstListing = book.ranks_history?.length - 1;
         list = book.ranks_history[firstListing]?.display_name || "none";
-        bdate = book.ranks_history[firstListing]?.bestsellers_date || "none";
 
         let listing = `<div class="entry"><div class="content">
-                <h2><a onclick="searchFor('${book.author}', '${book.title}')">
-                ${bookInfo.title}</h2></a>
+                <h2><a onclick="getDetails('${book.author}', '${book.title}')">
+                ${book.title}</h2></a>
                 <h4>By <a onclick="searchFor('${book.author}')">
-                ${bookInfo.author}</a></h4>
-                <h4 class="publisher">${bookInfo.publisher}</h4>
-                <p class="listdate">${bookInfo.description}</p>
+                ${book.author}</a></h4>
+                <h4 class="publisher">${book.publisher}</h4>
+                <p class="listdate">${book.description}</p>
                 <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank">Audible Search</a><br />
                 <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank">Goodreads Search</a><br />
                 <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank">The Storygraph Search</a><br />
@@ -138,14 +212,13 @@ function searchFor(author = "", title = "") {
                 <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank">Internet Search</a><br />
                 </div>`;
 
-        if (list != "none" && author && title) {
-          for (rank in book.ranks_history) {
-            listing += `<p>List: ${book.ranks_history[rank].display_name}<br />
-                        Bestsellers Date: ${book.ranks_history[rank].bestsellers_date}</p>`;
+        if (list != "none") {
+          for (i in book.ranks_history) {
+            listing += `<p>List: ${book.ranks_history[i].display_name}<br />
+                        Bestsellers Date: ${book.ranks_history[i].bestsellers_date}</p>`;
           }
         } else {
-          listing += `<p>Click book title for details<br/>`;
-          // Bestsellers Date: ${bdate}</p>`;
+          listing += `<p>List: none</p>`;
         }
         listing += `</div>`;
         document.getElementById("books").innerHTML += listing;
@@ -157,15 +230,16 @@ function searchFor(author = "", title = "") {
       
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
         Hold your horses!<br /><br />
+
         The New York Times limits the number of requests that we can send to the database. 
         By the time you're done reading this you can probably try again.<br /><br />
+
         If not, just wait longer.
-      
         `;
 
       console.log(error);
     });
-}
+};
 
 search.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -180,8 +254,6 @@ clearBtn.addEventListener("click", (e) => {
 const previouslyOn = () => {
   document.getElementById("books").innerHTML = "Previously on Mean Book Club:";
   for (let book of previously) {
-    //console.log(book.title)
-
     let newLink = document.createElement("a");
     newLink.onclick = () => searchFor(`${book.author}`, `${book.title}`);
     newLink.innerText = `${book.title} by ${book.author}`;
