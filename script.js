@@ -1,3 +1,6 @@
+//import { previouslyList } from './previouslylist.js';
+//let previously = previouslyList;
+
 let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
 //let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv"
 //let apikeyinput = document.getElementById("apikeyinput")
