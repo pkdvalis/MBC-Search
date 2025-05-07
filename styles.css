@@ -74,6 +74,10 @@ form input[type="submit"]:hover {
   background-color: #4b7ae7;
 }
 
+form input[type="button"]:hover {
+  background-color: #4b7ae7;
+}
+
 /* Books Grid Styling */
 #books {
   display: grid;
