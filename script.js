@@ -8,6 +8,8 @@ let search = document.getElementById("search");
 let searchAuthor = document.getElementById("author");
 let searchTitle = document.getElementById("title");
 let clearBtn = document.getElementById("clear");
+let searchTerms = new Set();
+let localSearchDb = {};
 
 /*
 apikeyinput.addEventListener("change", () => {
@@ -23,6 +25,21 @@ function searchFor(author = "", title = "") {
     previouslyOn();
     return;
   }
+
+  //check local searchterms
+  document.getElementById("books").innerHTML = "";
+  if (
+    Array.from(searchTerms).find(
+      (a) => a.toLowerCase() == (author + title).toLowerCase()
+    )
+  ) {
+    console.log("found!");
+    displaySearchResults(localSearchDb[author + title]);
+    return;
+  }
+
+  //if not found in local go fetch
+  console.log("Fetch!");
 
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
@@ -44,33 +61,13 @@ function searchFor(author = "", title = "") {
         
         `;
       }
+      // add to local terms and db
+      searchTerms.add(author + title);
 
-      nytimesBestSellers.results.forEach((book) => {
-        if (nytimesBestSellers.results.length == 1) {
-          getDetails(book.author, book.title);
-        }
-
-        let firstListing = book.ranks_history?.length - 1;
-        let list = book.ranks_history[firstListing]?.display_name || "none";
-
-        let listing = `<div class="entry"><div class="content">
-                      <h2><a onclick="getDetails('${book.author}', '${book.title}')">
-                      ${book.title}</h2></a>
-                      <h4>By <a onclick="searchFor('${book.author}')">
-                      ${book.author}</a></h4>
-                      <h4 class="publisher">${book.publisher}</h4>
-                      <p class="description">${book.description}</p>
-                      </div>`;
-
-        if (list != "none" && author && title) {
-          listing += `<p>List: ${book.ranks_history[firstListing]?.display_name}<br />
-                        Bestsellers Date: ${book.ranks_history[firstListing]?.bestsellers_date}</p>`;
-        }
-
-        listing += `<p>Click book title for details</p>`;
-        listing += `</div>`;
-        document.getElementById("books").innerHTML += listing;
+      Object.defineProperty(localSearchDb, author + title, {
+        value: nytimesBestSellers.results,
       });
+      displaySearchResults(nytimesBestSellers.results);
     })
     .catch((error) => {
       console.log("Error CATCH");
@@ -97,7 +94,7 @@ const getDetails = (author = "", title = "") => {
     previouslyOn();
     return;
   }
-
+  console.log("Fetch! getDetails");
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
       `${author}&title=${title}&api-key=${apiKey}`,
@@ -188,8 +185,38 @@ const previouslyOn = () => {
   }
 };
 
+const displaySearchResults = (results) => {
+  results.forEach((book) => {
+    if (results.length == 1) {
+      getDetails(book.author, book.title);
+    }
+
+    let firstListing = book.ranks_history?.length - 1;
+    let list = book.ranks_history[firstListing]?.display_name || "none";
+
+    let listing = `<div class="entry"><div class="content">
+                  <h2><a onclick="getDetails('${book.author}', '${book.title}')">
+                  ${book.title}</h2></a>
+                  <h4>By <a onclick="searchFor('${book.author}')">
+                  ${book.author}</a></h4>
+                  <h4 class="publisher">${book.publisher}</h4>
+                  <p class="description">${book.description}</p>
+                  </div>`;
+
+    if (list != "none" && author && title) {
+      listing += `<p>List: ${book.ranks_history[firstListing]?.display_name}<br />
+                    Bestsellers Date: ${book.ranks_history[firstListing]?.bestsellers_date}</p>`;
+    }
+
+    listing += `<p>Click book title for details</p>`;
+    listing += `</div>`;
+    document.getElementById("books").innerHTML += listing;
+  });
+};
+
 window.searchFor = searchFor;
 window.getDetails = getDetails;
 window.previouslyOn = previouslyOn;
+window.displaySearchResults = displaySearchResults;
 
 previouslyOn();
