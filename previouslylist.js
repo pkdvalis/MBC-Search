@@ -74,5 +74,3 @@ const previouslyList = [
   { title: "Relentless", author: "Dean Koontz" },
   { title: "L.A. Candy", author: "Lauren Conrad" },
 ];
-
-export { previouslyList };

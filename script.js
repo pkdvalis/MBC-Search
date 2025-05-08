@@ -1,5 +1,3 @@
-import { previouslyList } from "./previouslylist.js";
-
 let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
 //let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv"
 //let apikeyinput = document.getElementById("apikeyinput")
@@ -90,6 +88,7 @@ function searchFor(author = "", title = "") {
 const getDetails = (author = "", title = "") => {
   searchAuthor.value = author;
   searchTitle.value = title;
+
   if (!author && !title) {
     previouslyOn();
     return;
@@ -213,10 +212,5 @@ const displaySearchResults = (results) => {
     document.getElementById("books").innerHTML += listing;
   });
 };
-
-window.searchFor = searchFor;
-window.getDetails = getDetails;
-window.previouslyOn = previouslyOn;
-window.displaySearchResults = displaySearchResults;
 
 previouslyOn();
