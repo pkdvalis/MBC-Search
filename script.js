@@ -8,6 +8,9 @@ let searchTitle = document.getElementById("title");
 let clearBtn = document.getElementById("clear");
 let searchTerms = new Set();
 let localSearchDb = {};
+let detailTerms = new Set();
+let localDetailDb = {};
+let booksElement = document.getElementById("books");
 
 /*
 apikeyinput.addEventListener("change", () => {
@@ -24,21 +27,19 @@ function searchFor(author = "", title = "") {
     return;
   }
 
-  //check local searchterms
-  document.getElementById("books").innerHTML = "";
+  booksElement.innerHTML = "";
+
+  //check local search terms
   if (
     Array.from(searchTerms).find(
       (a) => a.toLowerCase() == (author + title).toLowerCase()
     )
   ) {
-    console.log("found!");
     displaySearchResults(localSearchDb[author + title]);
     return;
   }
 
   //if not found in local go fetch
-  console.log("Fetch!");
-
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
       `${author}&title=${title}&api-key=${apiKey}`,
@@ -48,18 +49,18 @@ function searchFor(author = "", title = "") {
       return response.json();
     })
     .then((nytimesBestSellers) => {
-      document.getElementById("books").innerHTML = "";
+      booksElement.innerHTML = "";
 
       //no entries found
       if (nytimesBestSellers.results.length == 0) {
-        document.getElementById("books").innerHTML = `
+        booksElement.innerHTML = `
       
       <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"><br />
         No entries found<br />
         
         `;
       }
-      // add to local terms and db
+      // add to local search terms and db
       searchTerms.add(author + title);
 
       Object.defineProperty(localSearchDb, author + title, {
@@ -68,8 +69,7 @@ function searchFor(author = "", title = "") {
       displaySearchResults(nytimesBestSellers.results);
     })
     .catch((error) => {
-      console.log("Error CATCH");
-      document.getElementById("books").innerHTML = `
+      booksElement.innerHTML = `
       
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
         Hold your horses!<br /><br />
@@ -80,8 +80,6 @@ function searchFor(author = "", title = "") {
         If not, just wait longer.
       
         `;
-
-      console.log(error);
     });
 }
 
@@ -93,7 +91,21 @@ const getDetails = (author = "", title = "") => {
     previouslyOn();
     return;
   }
-  console.log("Fetch! getDetails");
+
+  booksElement.innerHTML = "";
+
+  //check local details
+  if (
+    Array.from(detailTerms).find(
+      (a) => a.toLowerCase() == (author + title).toLowerCase()
+    )
+  ) {
+    displaySearchResults(localDetailDb[author + title], true);
+    return;
+  }
+
+  //if not found in local go fetch
+
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
       `${author}&title=${title}&api-key=${apiKey}`,
@@ -103,53 +115,25 @@ const getDetails = (author = "", title = "") => {
       return response.json();
     })
     .then((nytimesBestSellers) => {
-      document.getElementById("books").innerHTML = "";
-
       if (nytimesBestSellers.results.length == 0) {
-        document.getElementById("books").innerHTML = `
+        booksElement.innerHTML = `
       
       <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"><br />
         No entries found<br />
         
         `;
       }
+      // add to local details and db
+      detailTerms.add(author + title);
 
-      nytimesBestSellers.results.forEach((book) => {
-        if (book.title != title) return;
-
-        let firstListing = book.ranks_history?.length - 1;
-        let list = book.ranks_history[firstListing]?.display_name || "none";
-
-        let listing = `<div class="entry"><div class="content">
-                <h2><a onclick="getDetails('${book.author}', '${book.title}')">
-                ${book.title}</h2></a>
-                <h4>By <a onclick="searchFor('${book.author}')">
-                ${book.author}</a></h4>
-                <h4 class="publisher">${book.publisher}</h4>
-                <p class="listdate">${book.description}</p>
-                <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank">Audible Search</a><br />
-                <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank">Goodreads Search</a><br />
-                <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank">The Storygraph Search</a><br />
-                <a href="https://www.youtube.com/results?search_query=${book.title} ${book.author} audiobook" target="_blank">Youtube Search</a><br />
-                <a href="https://libbyapp.com/search/cwmars/search/query-${book.title} ${book.author}/page-1" target="_blank">Libby Search</a><br />
-                <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank">Internet Search</a><br />
-                </div>`;
-
-        if (list != "none") {
-          for (let i in book.ranks_history) {
-            listing += `<p>List: ${book.ranks_history[i].display_name}<br />
-                        Bestsellers Date: ${book.ranks_history[i].bestsellers_date}</p>`;
-          }
-        } else {
-          listing += `<p>List: none</p>`;
-        }
-        listing += `</div>`;
-        document.getElementById("books").innerHTML += listing;
+      Object.defineProperty(localDetailDb, author + title, {
+        value: nytimesBestSellers.results,
       });
+
+      displaySearchResults(nytimesBestSellers.results, true);
     })
     .catch((error) => {
-      console.log("Error CATCH");
-      document.getElementById("books").innerHTML = `
+      booksElement.innerHTML = `
       
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
         Hold your horses!<br /><br />
@@ -159,8 +143,6 @@ const getDetails = (author = "", title = "") => {
 
         If not, just wait longer.
         `;
-
-      console.log(error);
     });
 };
 
@@ -175,41 +157,71 @@ clearBtn.addEventListener("click", (e) => {
 });
 
 const previouslyOn = () => {
-  document.getElementById("books").innerHTML = "Previously on Mean Book Club:";
+  booksElement.innerHTML = "Previously on Mean Book Club:";
   for (let book of previouslyList) {
     let newLink = document.createElement("a");
     newLink.onclick = () => searchFor(`${book.author}`, `${book.title}`);
     newLink.innerText = `${book.title} by ${book.author}`;
-    document.getElementById("books").appendChild(newLink);
+    booksElement.appendChild(newLink);
   }
 };
 
-const displaySearchResults = (results) => {
+const displaySearchResults = (results, details = false) => {
   results.forEach((book) => {
-    if (results.length == 1) {
+    if (!details && results.length == 1) {
       getDetails(book.author, book.title);
+      return;
     }
+
+    if (details && book.title != searchTitle.value) return;
 
     let firstListing = book.ranks_history?.length - 1;
     let list = book.ranks_history[firstListing]?.display_name || "none";
 
-    let listing = `<div class="entry"><div class="content">
-                  <h2><a onclick="getDetails('${book.author}', '${book.title}')">
-                  ${book.title}</h2></a>
-                  <h4>By <a onclick="searchFor('${book.author}')">
-                  ${book.author}</a></h4>
-                  <h4 class="publisher">${book.publisher}</h4>
-                  <p class="description">${book.description}</p>
-                  </div>`;
+    //Basic Info
+    let listing = `
+          <div class="entry"><div class="content">
+          <h2><a onclick="getDetails('${book.author}', '${book.title}')">
+          ${book.title}</h2></a>
+          <h4>By <a onclick="searchFor('${book.author}')">
+          ${book.author}</a></h4>
+          <h4 class="publisher">${book.publisher}</h4>
+          <p class="description">${book.description}</p>`;
 
-    if (list != "none" && author && title) {
+    //Search Links
+    if (details) {
+      listing += `
+          <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank">audible Search</a><br />
+          <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank">goodreads Search</a><br />
+          <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank">The StoryGraph Search</a><br />
+          <a href="https://www.youtube.com/results?search_query=${book.title} ${book.author} audiobook" target="_blank">YouTube Search</a><br />
+          <a href="https://libbyapp.com/search/cwmars/search/query-${book.title} ${book.author}/page-1" target="_blank">Libby. Search</a><br />
+          <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank">Internet Search</a><br />`;
+    }
+    listing += `</div>`;
+
+    //Display first list book appears on
+    if (list != "none" && author && title && !details) {
       listing += `<p>List: ${book.ranks_history[firstListing]?.display_name}<br />
                     Bestsellers Date: ${book.ranks_history[firstListing]?.bestsellers_date}</p>`;
     }
 
-    listing += `<p>Click book title for details</p>`;
+    //Display all lists
+    if (details) {
+      if (list != "none") {
+        for (let i in book.ranks_history) {
+          listing += `<p>List: ${book.ranks_history[i].display_name}<br />
+                      Bestsellers Date: ${book.ranks_history[i].bestsellers_date}</p>`;
+        }
+      } else {
+        listing += `<p>List: none</p>`;
+      }
+    }
+
+    if (!details) listing += `<p>Click book title for details</p>`;
     listing += `</div>`;
-    document.getElementById("books").innerHTML += listing;
+
+    booksElement.innerHTML += listing;
   });
 };
 
