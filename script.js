@@ -19,9 +19,8 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
-  searchAuthor.value = author = author
-    .replace(/J\.D\./g, "JD")
-    .replace(/St\./g, "St");
+  searchAuthor.value = author = author.replace(/J\.D\./g, "JD");
+
   searchTitle.value = title;
 
   if (!author && !title) {
@@ -43,7 +42,7 @@ function searchFor(author = "", title = "") {
 
   //if not found in local go fetch
   fetch(
-    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
+    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
       `${author}&title=${title}&api-key=${apiKey}`,
     { method: "get" }
   )
@@ -109,7 +108,7 @@ const getDetails = (author = "", title = "") => {
   //if not found in local go fetch
 
   fetch(
-    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
+    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
       `${author}&title=${title}&api-key=${apiKey}`,
     { method: "get" }
   )
