@@ -20,8 +20,8 @@ apikeyinput.addEventListener("change", () => {
 
 function searchFor(author = "", title = "") {
   searchAuthor.value = author = author
-    .replace(/J.D./g, "JD")
-    .replace(/St./g, "St");
+    .replace(/J\.D\./g, "JD")
+    .replace(/St\./g, "St");
   searchTitle.value = title;
 
   if (!author && !title) {
