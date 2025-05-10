@@ -19,9 +19,7 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
-  searchAuthor.value = author = author
-    .replace(/J\.D\./g, "JD")
-    .replace(/St\./g, "St");
+  searchAuthor.value = author = author.replace(/J\.D\./g, "JD");
   searchTitle.value = title;
 
   if (!author && !title) {
@@ -43,7 +41,7 @@ function searchFor(author = "", title = "") {
 
   //if not found in local go fetch
   fetch(
-    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
+    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
       `${author}&title=${title}&api-key=${apiKey}`,
     { method: "get" }
   )
@@ -109,7 +107,7 @@ const getDetails = (author = "", title = "") => {
   //if not found in local go fetch
 
   fetch(
-    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?author=` +
+    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
       `${author}&title=${title}&api-key=${apiKey}`,
     { method: "get" }
   )
@@ -171,7 +169,7 @@ const previouslyOn = () => {
 const displaySearchResults = (results, details = false) => {
   results.forEach((book) => {
     if (!details && results.length == 1) {
-      getDetails(book.author, book.title);
+      getDetails(book.contributor.slice(2), book.title);
       return;
     }
 
@@ -183,10 +181,12 @@ const displaySearchResults = (results, details = false) => {
     //Basic Info
     let listing = `
           <div class="entry"><div class="content">
-          <h2><a onclick="getDetails('${book.author}', '${book.title}')">
+          <h2><a onclick="getDetails('${book.contributor.slice(2)}', '${
+      book.title
+    }')">
           ${book.title}</h2></a>
-          <h4>By <a onclick="searchFor('${book.author}')">
-          ${book.author}</a></h4>
+          <h4><a onclick="searchFor('${book.contributor.slice(2)}')">
+          ${book.contributor}</a></h4>
           <h4 class="publisher">${book.publisher}</h4>
           <p class="description">${book.description}</p>`;
 
