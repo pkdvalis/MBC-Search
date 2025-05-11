@@ -170,7 +170,7 @@ const previouslyOn = () => {
 const displaySearchResults = (results, details = false) => {
   results.forEach((book) => {
     if (!details && results.length == 1) {
-      getDetails(book.contributor.slice(2), book.title);
+      getDetails(book.contributor.slice(3), book.title);
       return;
     }
 
@@ -182,11 +182,11 @@ const displaySearchResults = (results, details = false) => {
     //Basic Info
     let listing = `
           <div class="entry"><div class="content">
-          <h2><a onclick="getDetails('${book.contributor.slice(2)}', '${
+          <h2><a onclick="getDetails('${book.contributor.slice(3)}', '${
       book.title
     }')">
           ${book.title}</h2></a>
-          <h4><a onclick="searchFor('${book.contributor.slice(2)}')">
+          <h4><a onclick="searchFor('${book.contributor.slice(3)}')">
           ${book.contributor}</a></h4>
           <h4 class="publisher">${book.publisher}</h4>
           <p class="description">${book.description}</p>`;
@@ -194,13 +194,13 @@ const displaySearchResults = (results, details = false) => {
     //Search Links
     if (details) {
       listing += `
-          <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank">audible</a><br />
-          <a href="https://www.audiobooks.com/search/book/${book.title} ${book.author}" target="_blank">audiobooks.com</a><br />
-          <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank">goodreads</a><br />
-          <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank">The StoryGraph</a><br />
-          <a href="https://www.youtube.com/results?search_query=${book.title} ${book.author} audiobook" target="_blank">YouTube</a><br />
-          <a href="https://libbyapp.com/search/cwmars/search/query-${book.title} ${book.author}/page-1" target="_blank">Libby.</a><br />
-          <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank">Internet Search</a><br />`;
+          <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/audible.com?larger=true" height=50 alt="audible.com favicon (large)" /></a>
+          <a href="https://www.audiobooks.com/search/book/${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/audiobooks.com?larger=true" height=50 alt="audiobooks.com favicon (large)" /></a>
+          <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/goodreads.com?larger=true" height=50 alt="goodreads.com favicon (large)" /></a>
+          <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/thestorygraph.com?larger=true" height=50 alt="thestorygraph.com favicon (large)" /></a>
+          <a href="https://www.youtube.com/results?search_query=${book.title} ${book.author} audiobook" target="_blank"><img src="https://favicon.im/youtube.com?larger=true" height=50 alt="youtube.com favicon (large)" /></a>
+          <a href="https://libbyapp.com/search/cwmars/search/query-${book.title} ${book.author}/page-1" target="_blank"><img src="https://favicon.im/libbyapp.com?larger=true" height=50 alt="libbyapp.com favicon (large)" /></a>
+          <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank"><img src="https://favicon.im/duckduckgo.com?larger=true" height=50 alt="duckduckgo.com favicon (large)" /></a>`;
     }
     listing += `</div>`;
 
