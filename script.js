@@ -194,11 +194,12 @@ const displaySearchResults = (results, details = false) => {
     //Search Links
     if (details) {
       listing += `
-          <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank">audible Search</a><br />
-          <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank">goodreads Search</a><br />
-          <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank">The StoryGraph Search</a><br />
-          <a href="https://www.youtube.com/results?search_query=${book.title} ${book.author} audiobook" target="_blank">YouTube Search</a><br />
-          <a href="https://libbyapp.com/search/cwmars/search/query-${book.title} ${book.author}/page-1" target="_blank">Libby. Search</a><br />
+          <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank">audible</a><br />
+          <a href="https://www.audiobooks.com/search/book/${book.title} ${book.author}" target="_blank">audiobooks.com</a><br />
+          <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank">goodreads</a><br />
+          <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank">The StoryGraph</a><br />
+          <a href="https://www.youtube.com/results?search_query=${book.title} ${book.author} audiobook" target="_blank">YouTube</a><br />
+          <a href="https://libbyapp.com/search/cwmars/search/query-${book.title} ${book.author}/page-1" target="_blank">Libby.</a><br />
           <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank">Internet Search</a><br />`;
     }
     listing += `</div>`;
