@@ -190,6 +190,9 @@ const displaySearchResults = (results, details = false) => {
     let firstListing = book.ranks_history?.length - 1;
     let list = book.ranks_history[firstListing]?.display_name || "none";
 
+    let isbn = book.isbns[0]?.isbn13;
+    if (!isbn) isbn = "";
+
     //Basic Info
     let listing = `
           <div class="entry">
@@ -207,9 +210,7 @@ const displaySearchResults = (results, details = false) => {
               <a onclick="getDetails('${book.contributor.slice(3)}', '${
       book.title
     }')">
-              <img src="https://covers.openlibrary.org/b/isbn/${
-                book.isbns[0].isbn13 || ""
-              }-M.jpg" /></a>
+              <img src="https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg" /></a>
             </div>
             <p class="description">${book.description}</p>`;
 
