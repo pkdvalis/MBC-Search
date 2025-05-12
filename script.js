@@ -21,7 +21,10 @@ apikeyinput.addEventListener("change", () => {
 
 function searchFor(author = "", title = "") {
   titleText.text = `Mean Book Club Bestsellers List Search`;
-  booksElement.style.gridTemplateColumns = "repeat(3, 1fr)";
+  booksElement.style.display = "grid";
+  booksElement.style.gridTemplateColumns =
+    "repeat(auto-fit, minmax(350px, 1fr))";
+
   searchAuthor.value = author = author.replace(/J\.D\./g, "JD");
 
   searchTitle.value = title;
@@ -93,7 +96,8 @@ function searchFor(author = "", title = "") {
 const getDetails = (author = "", title = "") => {
   searchAuthor.value = author;
   searchTitle.value = title;
-  booksElement.style.gridTemplateColumns = "repeat(2, 1fr)";
+  //element.style.removeProperty('background-color');
+  booksElement.style.gridTemplateColumns = "repeat(3,minmax(auto, 800px))";
 
   if (!author && !title) {
     previouslyOn();
@@ -179,6 +183,7 @@ const previouslyOn = () => {
 
 const displaySearchResults = (results, details = false) => {
   titleText.text = `Mean Book Club Bestsellers List Search`;
+  if (details) booksElement.innerHTML += `<div></div>`;
   results.forEach((book) => {
     if (!details && results.length == 1) {
       getDetails(book.contributor.slice(3), book.title);
@@ -266,6 +271,7 @@ const displaySearchResults = (results, details = false) => {
     listing += `</div>`;
 
     booksElement.innerHTML += listing;
+    if (details) booksElement.innerHTML += `<div></div>`;
   });
 };
 
