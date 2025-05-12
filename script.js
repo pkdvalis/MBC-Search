@@ -245,7 +245,7 @@ const displaySearchResults = (results, details = false) => {
             "-",
             "/"
           );
-          listing += `<a href="https://www.nytimes.com/books/best-sellers/${listlinkdate}/${listlinkname}/">
+          listing += `<a href="https://www.nytimes.com/books/best-sellers/${listlinkdate}/${listlinkname}/" target="_blank">
           <p>${book.ranks_history[i].list_name}<br />
           ${book.ranks_history[i].published_date}</p></a>`;
         }
