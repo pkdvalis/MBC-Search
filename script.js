@@ -1,5 +1,5 @@
-//let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
-let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
+let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+//let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
 //let apikeyinput = document.getElementById("apikeyinput")
 //let apiKey = apikeyinput.value;
 let search = document.getElementById("search");
@@ -231,10 +231,12 @@ const displaySearchResults = (results, details = false) => {
     //Display all lists
     if (details) {
       if (list != "none") {
+        listing += `<div id="bestsellerlists">`;
         for (let i in book.ranks_history) {
           listing += `<p>${book.ranks_history[i].display_name}<br />
                      ${book.ranks_history[i].bestsellers_date}</p>`;
         }
+        listing += `</div>`;
       } else {
         listing += `<p>List: none</p>`;
       }
