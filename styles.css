@@ -130,6 +130,12 @@ form input[type="button"]:hover {
   text-align: left;
 }
 
+.links {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
 /* Individual Book Card Styling */
 .entry {
   background-color: #ffffff;
