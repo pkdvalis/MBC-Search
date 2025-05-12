@@ -1,5 +1,5 @@
-let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
-//let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
+//let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
 //let apikeyinput = document.getElementById("apikeyinput")
 //let apiKey = apikeyinput.value;
 let search = document.getElementById("search");
@@ -74,6 +74,7 @@ function searchFor(author = "", title = "") {
       displaySearchResults(nytimesBestSellers.results);
     })
     .catch((error) => {
+      console.log(error);
       booksElement.innerHTML = `
       
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
@@ -140,6 +141,7 @@ const getDetails = (author = "", title = "") => {
       displaySearchResults(nytimesBestSellers.results, true);
     })
     .catch((error) => {
+      console.log(error);
       booksElement.innerHTML = `
       
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
@@ -224,17 +226,28 @@ const displaySearchResults = (results, details = false) => {
 
     //Display first list book appears on
     if (list != "none" && author && title && !details) {
-      listing += `<p>${book.ranks_history[firstListing]?.display_name}<br />
-                    ${book.ranks_history[firstListing]?.bestsellers_date}</p>`;
+      listing += `<p>${book.ranks_history[firstListing]?.list_name}<br />
+                    ${book.ranks_history[firstListing]?.published_date}</p>`;
     }
 
     //Display all lists
     if (details) {
       if (list != "none") {
-        listing += `<div id="bestsellerlists">`;
+        listing += `<p>
+        ${book.title} ${book.contributor} appears in the following Bestsellers lists:</p>
+        <div id="bestsellerlists">
+        `;
         for (let i in book.ranks_history) {
-          listing += `<p>${book.ranks_history[i].display_name}<br />
-                     ${book.ranks_history[i].bestsellers_date}</p>`;
+          let listlinkname = book.ranks_history[i].list_name
+            .toLowerCase()
+            .replaceAll(" ", "-");
+          let listlinkdate = book.ranks_history[i].published_date.replaceAll(
+            "-",
+            "/"
+          );
+          listing += `<a href="https://www.nytimes.com/books/best-sellers/${listlinkdate}/${listlinkname}/">
+          <p>${book.ranks_history[i].list_name}<br />
+          ${book.ranks_history[i].published_date}</p></a>`;
         }
         listing += `</div>`;
       } else {
