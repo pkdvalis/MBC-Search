@@ -174,11 +174,6 @@ body {
     padding: 15px;
   }
 
-  .links {
-    flex-direction: column;
-    align-items: center;
-  }
-
   .links img {
     margin: 5px 0;
   }
