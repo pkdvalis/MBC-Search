@@ -1,5 +1,5 @@
-//let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
-let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
+let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+//let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
 //let apikeyinput = document.getElementById("apikeyinput")
 //let apiKey = apikeyinput.value;
 let search = document.getElementById("search");
@@ -10,7 +10,7 @@ let searchTerms = new Set();
 let localSearchDb = {};
 let detailTerms = new Set();
 let localDetailDb = {};
-let toptop = document.getElementById("toptext");
+let titleText = document.getElementsByTagName("TITLE")[0];
 let booksElement = document.getElementById("books");
 
 /*
@@ -20,6 +20,7 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
+  titleText.text = `Mean Book Club Bestsellers List Search`;
   booksElement.style.gridTemplateColumns = "repeat(3, 1fr)";
   searchAuthor.value = author = author.replace(/J\.D\./g, "JD");
 
@@ -166,6 +167,7 @@ clearBtn.addEventListener("click", (e) => {
 });
 
 const previouslyOn = () => {
+  titleText.text = `Mean Book Club Bestsellers List Search`;
   booksElement.innerHTML = "Previously on Mean Book Club:";
   for (let book of previouslyList) {
     let newLink = document.createElement("a");
@@ -176,6 +178,7 @@ const previouslyOn = () => {
 };
 
 const displaySearchResults = (results, details = false) => {
+  titleText.text = `Mean Book Club Bestsellers List Search`;
   results.forEach((book) => {
     if (!details && results.length == 1) {
       getDetails(book.contributor.slice(3), book.title);
@@ -205,13 +208,14 @@ const displaySearchResults = (results, details = false) => {
       book.title
     }')">
               <img src="https://covers.openlibrary.org/b/isbn/${
-                book.isbns[0].isbn13
+                book.isbns[0].isbn13 || ""
               }-M.jpg" /></a>
             </div>
             <p class="description">${book.description}</p>`;
 
     //Search Links
     if (details) {
+      titleText.text = `${book.title} ${book.contributor} Mean Book Club Bestsellers List Search`;
       listing += `
           <div class="links">
           <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/audible.com?larger=true" height=50 alt="audible.com favicon (large)" /></a>
