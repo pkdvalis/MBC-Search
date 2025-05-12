@@ -90,8 +90,18 @@ form input[type="button"]:hover {
 }
 
 .content {
+  position: relative;
   margin-bottom: auto;
+
+  height: 100%;
 }
+
+.clickfordetails {
+  position: absolute;
+  bottom: 0px;
+  margin: auto;
+}
+
 .cover {
   margin: auto;
   width: 100%;
@@ -103,7 +113,7 @@ form input[type="button"]:hover {
 }
 
 .cover img {
-  padding: 50px;
+  padding: 25px;
 }
 
 .description {

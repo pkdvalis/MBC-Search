@@ -240,7 +240,8 @@ const displaySearchResults = (results, details = false) => {
       }
     }
 
-    if (!details) listing += `<p>Click book title for details</p>`;
+    if (!details)
+      listing += `<br/><p class="clickfordetails">Click book title for details</p>`;
     listing += `</div></div>`;
     listing += `</div>`;
 
