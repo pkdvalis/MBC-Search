@@ -1,5 +1,5 @@
-let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
-//let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv"
+//let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
 //let apikeyinput = document.getElementById("apikeyinput")
 //let apiKey = apikeyinput.value;
 let search = document.getElementById("search");
@@ -10,6 +10,7 @@ let searchTerms = new Set();
 let localSearchDb = {};
 let detailTerms = new Set();
 let localDetailDb = {};
+let toptop = document.getElementById("toptext");
 let booksElement = document.getElementById("books");
 
 /*
@@ -19,6 +20,7 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
+  booksElement.style.gridTemplateColumns = "repeat(3, 1fr)";
   searchAuthor.value = author = author.replace(/J\.D\./g, "JD");
 
   searchTitle.value = title;
@@ -36,11 +38,13 @@ function searchFor(author = "", title = "") {
       (a) => a.toLowerCase() == (author + title).toLowerCase()
     )
   ) {
+    //toptop.innerText = "local";
     displaySearchResults(localSearchDb[author + title]);
     return;
   }
 
   //if not found in local go fetch
+  //toptop.innerText = "fetch";
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
       `${author}&title=${title}&api-key=${apiKey}`,
@@ -87,6 +91,7 @@ function searchFor(author = "", title = "") {
 const getDetails = (author = "", title = "") => {
   searchAuthor.value = author;
   searchTitle.value = title;
+  booksElement.style.gridTemplateColumns = "repeat(2, 1fr)";
 
   if (!author && !title) {
     previouslyOn();
@@ -101,12 +106,13 @@ const getDetails = (author = "", title = "") => {
       (a) => a.toLowerCase() == (author + title).toLowerCase()
     )
   ) {
+    //toptop.innerText = "local";
     displaySearchResults(localDetailDb[author + title], true);
     return;
   }
 
   //if not found in local go fetch
-
+  //toptop.innerText = "fetch";
   fetch(
     `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
       `${author}&title=${title}&api-key=${apiKey}`,
@@ -181,41 +187,53 @@ const displaySearchResults = (results, details = false) => {
 
     //Basic Info
     let listing = `
-          <div class="entry"><div class="content">
-          <h2><a onclick="getDetails('${book.contributor.slice(3)}', '${
+          <div class="entry">
+            <div class="content">
+              <h2>
+              <a onclick="getDetails('${book.contributor.slice(3)}', '${
       book.title
     }')">
-          ${book.title}</h2></a>
-          <h4><a onclick="searchFor('${book.contributor.slice(3)}')">
-          ${book.contributor}</a></h4>
-          <h4 class="publisher">${book.publisher}</h4>
-          <p class="description">${book.description}</p>`;
+              ${book.title}</h2></a>
+              <h4><a onclick="searchFor('${book.contributor.slice(3)}')">
+              ${book.contributor}</a></h4>
+              <h4 class="publisher">${book.publisher}</h4>
+            
+            <div class="cover">
+              <a onclick="getDetails('${book.contributor.slice(3)}', '${
+      book.title
+    }')">
+              <img src="https://covers.openlibrary.org/b/isbn/${
+                book.isbns[0].isbn13
+              }-M.jpg" /></a>
+            </div>
+            <p class="description">${book.description}</p>`;
 
     //Search Links
     if (details) {
       listing += `
+          <div class="links">
           <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/audible.com?larger=true" height=50 alt="audible.com favicon (large)" /></a>
           <a href="https://www.audiobooks.com/search/book/${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/audiobooks.com?larger=true" height=50 alt="audiobooks.com favicon (large)" /></a>
           <a href="https://www.goodreads.com/search?q=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/goodreads.com?larger=true" height=50 alt="goodreads.com favicon (large)" /></a>
-          <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/thestorygraph.com?larger=true" height=50 alt="thestorygraph.com favicon (large)" /></a>
+          <a href="https://app.thestorygraph.com/browse?search_term=${book.title} ${book.author}" target="_blank"><img src="https://assets.thestorygraph.com/assets/logo-no-text-7334be64b3d3a1652e2a4d9bc2ce2c12fdc48c879f4503e8fa702e1b57005e40.png" height=50 alt="thestorygraph.com favicon (large)" /></a>
           <a href="https://www.youtube.com/results?search_query=${book.title} ${book.author} audiobook" target="_blank"><img src="https://favicon.im/youtube.com?larger=true" height=50 alt="youtube.com favicon (large)" /></a>
           <a href="https://libbyapp.com/search/cwmars/search/query-${book.title} ${book.author}/page-1" target="_blank"><img src="https://favicon.im/libbyapp.com?larger=true" height=50 alt="libbyapp.com favicon (large)" /></a>
-          <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank"><img src="https://favicon.im/duckduckgo.com?larger=true" height=50 alt="duckduckgo.com favicon (large)" /></a>`;
+          <a href="https://duckduckgo.com/?q=${book.title} ${book.author} New York Times Bestseller" target="_blank"><img src="https://favicon.im/duckduckgo.com?larger=true" height=50 alt="duckduckgo.com favicon (large)" /></a>
+          </div>`;
     }
-    listing += `</div>`;
 
     //Display first list book appears on
     if (list != "none" && author && title && !details) {
-      listing += `<p>List: ${book.ranks_history[firstListing]?.display_name}<br />
-                    Bestsellers Date: ${book.ranks_history[firstListing]?.bestsellers_date}</p>`;
+      listing += `<p>${book.ranks_history[firstListing]?.display_name}<br />
+                    ${book.ranks_history[firstListing]?.bestsellers_date}</p>`;
     }
 
     //Display all lists
     if (details) {
       if (list != "none") {
         for (let i in book.ranks_history) {
-          listing += `<p>List: ${book.ranks_history[i].display_name}<br />
-                      Bestsellers Date: ${book.ranks_history[i].bestsellers_date}</p>`;
+          listing += `<p>${book.ranks_history[i].display_name}<br />
+                     ${book.ranks_history[i].bestsellers_date}</p>`;
         }
       } else {
         listing += `<p>List: none</p>`;
@@ -223,6 +241,7 @@ const displaySearchResults = (results, details = false) => {
     }
 
     if (!details) listing += `<p>Click book title for details</p>`;
+    listing += `</div></div>`;
     listing += `</div>`;
 
     booksElement.innerHTML += listing;

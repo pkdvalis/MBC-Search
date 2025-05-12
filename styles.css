@@ -92,6 +92,23 @@ form input[type="button"]:hover {
 .content {
   margin-bottom: auto;
 }
+.cover {
+  margin: auto;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center; /* horizontal centering */
+  align-items: start; /* top-aligned */
+  padding-top: 1rem;
+}
+
+.cover img {
+  padding: 50px;
+}
+
+.description {
+  text-align: left;
+}
 
 /* Individual Book Card Styling */
 .entry {
