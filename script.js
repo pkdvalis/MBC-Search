@@ -127,7 +127,7 @@ const getDetails = (author = "", title = "") => {
 
   for (let key of Object.keys(localStorage)) {
     if (key.toLowerCase() == ("detail-" + author + title).toLowerCase()) {
-      displaySearchResults(JSON.parse(localStorage.getItem(key)));
+      displaySearchResults(JSON.parse(localStorage.getItem(key)), true);
       return;
     }
   }
