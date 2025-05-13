@@ -177,7 +177,8 @@ clearBtn.addEventListener("click", (e) => {
 
 const previouslyOn = () => {
   titleText.text = `Mean Book Club Bestsellers List Search`;
-  booksElement.innerHTML = "Previously on Mean Book Club:";
+  booksElement.innerHTML =
+    '<p id="previouslyon" >Previously on Mean Book Club:</p>';
   for (let book of previouslyList) {
     let newLink = document.createElement("a");
     newLink.onclick = () => searchFor(`${book.author}`, `${book.title}`);

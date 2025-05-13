@@ -41,6 +41,13 @@ body {
   margin-bottom: 30px;
 }
 
+#previouslyon {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--hover);
+  margin-bottom: 30px;
+}
+
 /* Form */
 #search {
   display: flex;
