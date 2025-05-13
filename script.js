@@ -20,7 +20,7 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
-  console.log("searchFor", author, title);
+  //console.log("searchFor", author, title);
   //update URL
   modifyState(`?author=${author}&title=${title}`);
   titleText.text = `Mean Book Club Bestsellers List Search`;
@@ -43,7 +43,7 @@ function searchFor(author = "", title = "") {
   if (localStorage.getItem(key)) {
     console.log("local search hit");
 
-    displaySearchResults(JSON.parse(localStorage.getItem(key)).slice(0, -1));
+    displaySearchResults(JSON.parse(localStorage.getItem(key)));
   }
   /*
   for (let key of Object.keys(localStorage)) {
@@ -114,11 +114,11 @@ function searchFor(author = "", title = "") {
 }
 
 const getDetails = (author = "", title = "") => {
-  console.log("getDetails", author, title);
+  //console.log("getDetails", author, title);
   modifyState(`?author=${author}&title=${title}`);
   searchAuthor.value = author;
   searchTitle.value = title;
-  //element.style.removeProperty('background-color');
+
   booksElement.style.gridTemplateColumns = "repeat(3,minmax(auto, 800px))";
 
   if (!author && !title) {
@@ -142,10 +142,7 @@ const getDetails = (author = "", title = "") => {
 
   for (let key of Object.keys(localStorage)) {
     if (key.toLowerCase() == ("detail-" + author + title).toLowerCase()) {
-      displaySearchResults(
-        JSON.parse(localStorage.getItem(key)).slice(0, -1),
-        true
-      );
+      displaySearchResults(JSON.parse(localStorage.getItem(key)), true);
       return;
     }
   }
@@ -217,7 +214,7 @@ clearBtn.addEventListener("click", (e) => {
 });
 
 const previouslyOn = () => {
-  console.log("previously");
+  //console.log("previously");
   titleText.text = `Mean Book Club Bestsellers List Search`;
   booksElement.innerHTML =
     '<p id="previouslyon" >Previously on Mean Book Club:</p>';
@@ -230,15 +227,16 @@ const previouslyOn = () => {
 };
 
 const displaySearchResults = (results, details = false) => {
-  console.log("incoming results", results);
+  //console.log("incoming results", results);
   titleText.text = `Mean Book Club Bestsellers List Search`;
 
   if (details) booksElement.innerHTML += `<div></div>`;
 
   results.forEach((book) => {
     if (typeof book == "number") return;
-    if (!details && results.length == 1) {
-      console.log("calling details", book.contributor.slice(3));
+    console.log(details, results.length);
+    if (!details && results.length == 2) {
+      console.log("calling details", book.contributor.slice(3), book.title);
       getDetails(book.contributor.slice(3), book.title);
       return;
     }
@@ -334,7 +332,7 @@ const displaySearchResults = (results, details = false) => {
 };
 
 function processURL() {
-  console.log("processURL", author, title);
+  //console.log("processURL", author, title);
   let paramString = window.location.href.split("?")[1];
   let queryString = new URLSearchParams(paramString);
   //console.log(queryString);
@@ -350,7 +348,7 @@ function processURL() {
 }
 
 function modifyState(newURL) {
-  console.log("modifystateL", author, title);
+  //console.log("modifystateL", author, title);
   let stateObj = { id: Date.now() };
   window.history.replaceState(
     stateObj,
