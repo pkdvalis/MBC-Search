@@ -244,7 +244,7 @@ const displaySearchResults = (results, details = false) => {
               <h2>
               <a onclick="getDetails('${book.contributor.slice(3)}', '${
       book.title
-    }'), true">
+    }')">
               ${book.title}</h2></a>
               <h4><a onclick="searchFor('${book.contributor.slice(3)}')">
               ${book.contributor}</a></h4>
@@ -253,7 +253,7 @@ const displaySearchResults = (results, details = false) => {
             <div class="cover">
               <a onclick="getDetails('${book.contributor.slice(3)}', '${
       book.title
-    }', true)">
+    }')">
               <img src="https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg" /></a>
             </div>
             <p class="description">${book.description}</p>`;
