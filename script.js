@@ -21,9 +21,7 @@ apikeyinput.addEventListener("change", () => {
 
 function searchFor(author = "", title = "") {
   //update URL
-  modifyState(
-    `?author=${author.replace(" ", "+")}&title=${title.replace(" ", "+")}`
-  );
+  modifyState(`?author=${author}&title=${title}`);
   titleText.text = `Mean Book Club Bestsellers List Search`;
   booksElement.style.display = "grid";
   booksElement.style.gridTemplateColumns =
@@ -108,9 +106,7 @@ function searchFor(author = "", title = "") {
 }
 
 const getDetails = (author = "", title = "") => {
-  modifyState(
-    `?author=${author.replace(" ", "+")}&title=${title.replace(" ", "+")}`
-  );
+  modifyState(`?author=${author}&title=${title}`);
   searchAuthor.value = author;
   searchTitle.value = title;
   //element.style.removeProperty('background-color');
@@ -331,7 +327,11 @@ function processURL() {
 
 function modifyState(newURL) {
   let stateObj = { id: Date.now() };
-  window.history.replaceState(stateObj, newURL, `${newURL}`);
+  window.history.replaceState(
+    stateObj,
+    newURL.replaceAll(" ", "+"),
+    `${newURL.replaceAll(" ", "+")}`
+  );
 }
 
 previouslyOn();
