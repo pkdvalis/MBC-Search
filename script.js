@@ -44,7 +44,7 @@ function searchFor(author = "", title = "") {
   for (let key of Object.keys(localStorage)) {
     console.log(`${key}`);
     if (key.toLowerCase() == ("search-" + author + title).toLowerCase()) {
-      displaySearchResults(JSON.parse(localStorage.getItem(key)));
+      displaySearchResults(JSON.parse(localStorage.getItem(key)).slice(0, -1));
       return;
     }
   }
@@ -127,7 +127,10 @@ const getDetails = (author = "", title = "") => {
 
   for (let key of Object.keys(localStorage)) {
     if (key.toLowerCase() == ("detail-" + author + title).toLowerCase()) {
-      displaySearchResults(JSON.parse(localStorage.getItem(key)), true);
+      displaySearchResults(
+        JSON.parse(localStorage.getItem(key)).slice(0, -1),
+        true
+      );
       return;
     }
   }
@@ -212,17 +215,25 @@ const previouslyOn = () => {
 
 const displaySearchResults = (results, details = false) => {
   titleText.text = `Mean Book Club Bestsellers List Search`;
+
   if (details) booksElement.innerHTML += `<div></div>`;
+
   results.forEach((book) => {
+    console.log(details, results.length);
     if (!details && results.length == 1) {
+      console.log("calling details", book.contributor.slice(3));
       getDetails(book.contributor.slice(3), book.title);
       return;
     }
 
     if (details && book.title != searchTitle.value) return;
 
-    let firstListing = book.ranks_history?.length - 1;
-    let list = book.ranks_history[firstListing]?.display_name || "none";
+    let firstListing;
+    let list = "none";
+    if (book.ranks_history) {
+      firstListing = book.ranks_history?.length - 1;
+      list = book.ranks_history[firstListing]?.display_name || "none";
+    }
 
     let isbn = book.isbns[0]?.isbn13;
     if (!isbn) isbn = "";
