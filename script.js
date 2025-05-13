@@ -20,6 +20,7 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
+  //update URL
   modifyState(
     `?author=${author.replace(" ", "+")}&title=${title.replace(" ", "+")}`
   );
@@ -39,6 +40,15 @@ function searchFor(author = "", title = "") {
   booksElement.innerHTML = "";
 
   //check local search terms
+
+  for (let key of Object.keys(localStorage)) {
+    console.log(`${key}`);
+    if (key.toLowerCase() == ("search-" + author + title).toLowerCase()) {
+      displaySearchResults(JSON.parse(localStorage.getItem(key)));
+      return;
+    }
+  }
+  /* memory db
   if (
     Array.from(searchTerms).find(
       (a) => a.toLowerCase() == (author + title).toLowerCase()
@@ -48,6 +58,7 @@ function searchFor(author = "", title = "") {
     displaySearchResults(localSearchDb[author + title]);
     return;
   }
+  */
 
   //if not found in local go fetch
   //toptop.innerText = "fetch";
@@ -71,12 +82,13 @@ function searchFor(author = "", title = "") {
         
         `;
       }
-      // add to local search terms and db
-      searchTerms.add(author + title);
+      // add to local storage
+      nytimesBestSellers.results.push(Date.now());
+      localStorage.setItem(
+        "search-" + author + title,
+        JSON.stringify(nytimesBestSellers.results)
+      );
 
-      Object.defineProperty(localSearchDb, author + title, {
-        value: nytimesBestSellers.results,
-      });
       displaySearchResults(nytimesBestSellers.results);
     })
     .catch((error) => {
@@ -112,6 +124,15 @@ const getDetails = (author = "", title = "") => {
   booksElement.innerHTML = "";
 
   //check local details
+
+  for (let key of Object.keys(localStorage)) {
+    if (key.toLowerCase() == ("detail-" + author + title).toLowerCase()) {
+      displaySearchResults(JSON.parse(localStorage.getItem(key)));
+      return;
+    }
+  }
+
+  /*
   if (
     Array.from(detailTerms).find(
       (a) => a.toLowerCase() == (author + title).toLowerCase()
@@ -121,6 +142,7 @@ const getDetails = (author = "", title = "") => {
     displaySearchResults(localDetailDb[author + title], true);
     return;
   }
+  */
 
   //if not found in local go fetch
   //toptop.innerText = "fetch";
@@ -141,12 +163,13 @@ const getDetails = (author = "", title = "") => {
         
         `;
       }
-      // add to local details and db
-      detailTerms.add(author + title);
 
-      Object.defineProperty(localDetailDb, author + title, {
-        value: nytimesBestSellers.results,
-      });
+      // add to local storage
+      nytimesBestSellers.results.push(Date.now());
+      localStorage.setItem(
+        "detail-" + author + title,
+        JSON.stringify(nytimesBestSellers.results)
+      );
 
       displaySearchResults(nytimesBestSellers.results, true);
     })
