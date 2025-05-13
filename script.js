@@ -20,6 +20,7 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
+  console.log("searchFor", author, title);
   //update URL
   modifyState(`?author=${author}&title=${title}`);
   titleText.text = `Mean Book Club Bestsellers List Search`;
@@ -38,7 +39,13 @@ function searchFor(author = "", title = "") {
   booksElement.innerHTML = "";
 
   //check local search terms
+  let key = `search-${author.toLowerCase()}${title.toLowerCase()}`;
+  if (localStorage.getItem(key)) {
+    console.log("local search hit");
 
+    displaySearchResults(JSON.parse(localStorage.getItem(key)).slice(0, -1));
+  }
+  /*
   for (let key of Object.keys(localStorage)) {
     console.log(`${key}`);
     if (key.toLowerCase() == ("search-" + author + title).toLowerCase()) {
@@ -46,6 +53,7 @@ function searchFor(author = "", title = "") {
       return;
     }
   }
+  */
   /* memory db
   if (
     Array.from(searchTerms).find(
@@ -83,7 +91,7 @@ function searchFor(author = "", title = "") {
       // add to local storage
       nytimesBestSellers.results.push(Date.now());
       localStorage.setItem(
-        "search-" + author + title,
+        `search-${author.toLowerCase()}${title.toLowerCase()}`,
         JSON.stringify(nytimesBestSellers.results)
       );
 
@@ -106,6 +114,7 @@ function searchFor(author = "", title = "") {
 }
 
 const getDetails = (author = "", title = "") => {
+  console.log("getDetails", author, title);
   modifyState(`?author=${author}&title=${title}`);
   searchAuthor.value = author;
   searchTitle.value = title;
@@ -120,6 +129,16 @@ const getDetails = (author = "", title = "") => {
   booksElement.innerHTML = "";
 
   //check local details
+
+  //check local search terms
+  /*
+  let key = `detail-${author.toLowerCase()}${title.toLowerCase()}`
+  if (localStorage.getItem(key)) {
+    console.log("local detail hit");
+    
+    displaySearchResults(JSON.parse(localStorage.getItem(key)).slice(0, -1));
+  }
+*/
 
   for (let key of Object.keys(localStorage)) {
     if (key.toLowerCase() == ("detail-" + author + title).toLowerCase()) {
@@ -166,7 +185,7 @@ const getDetails = (author = "", title = "") => {
       // add to local storage
       nytimesBestSellers.results.push(Date.now());
       localStorage.setItem(
-        "detail-" + author + title,
+        `detail-${author.toLowerCase()}${title.toLowerCase()}`,
         JSON.stringify(nytimesBestSellers.results)
       );
 
@@ -198,6 +217,7 @@ clearBtn.addEventListener("click", (e) => {
 });
 
 const previouslyOn = () => {
+  console.log("previously");
   titleText.text = `Mean Book Club Bestsellers List Search`;
   booksElement.innerHTML =
     '<p id="previouslyon" >Previously on Mean Book Club:</p>';
@@ -210,11 +230,13 @@ const previouslyOn = () => {
 };
 
 const displaySearchResults = (results, details = false) => {
+  console.log("incoming results", results);
   titleText.text = `Mean Book Club Bestsellers List Search`;
 
   if (details) booksElement.innerHTML += `<div></div>`;
 
   results.forEach((book) => {
+    if (typeof book == "number") return;
     if (!details && results.length == 1) {
       console.log("calling details", book.contributor.slice(3));
       getDetails(book.contributor.slice(3), book.title);
@@ -230,6 +252,7 @@ const displaySearchResults = (results, details = false) => {
       list = book.ranks_history[firstListing]?.display_name || "none";
     }
 
+    //console.log(book)
     let isbn = book.isbns[0]?.isbn13;
     if (!isbn) isbn = "";
 
@@ -311,21 +334,23 @@ const displaySearchResults = (results, details = false) => {
 };
 
 function processURL() {
+  console.log("processURL", author, title);
   let paramString = window.location.href.split("?")[1];
   let queryString = new URLSearchParams(paramString);
-  console.log(queryString);
+  //console.log(queryString);
   let a, t;
   for (let pair of queryString.entries()) {
-    console.log(pair[0].toLowerCase(), pair[1]);
+    //console.log(pair[0].toLowerCase(), pair[1]);
     if (pair[0].toLowerCase() == "author") a = pair[1];
     if (pair[0].toLowerCase() == "title") t = pair[1];
-    console.log(a, t);
+    //console.log(a, t);
   }
-  console.log(a, t);
+  //console.log(a, t);
   searchFor(a, t);
 }
 
 function modifyState(newURL) {
+  console.log("modifystateL", author, title);
   let stateObj = { id: Date.now() };
   window.history.replaceState(
     stateObj,
@@ -336,3 +361,15 @@ function modifyState(newURL) {
 
 previouslyOn();
 processURL();
+
+/*
+for (let key of Object.keys(localStorage)) {
+  //console.log(`${key.toLowerCase()}`, localStorage[value]);
+  localStorage.setItem(key.toLowerCase(), localStorage.getItem(key))
+  
+}
+*/
+//console.log(localStorage.getItem("search-" + "Stephenie Meyer" + "Twilight"))
+
+//console.log("testdoes not exist", localStorage.getItem("does not exist"))
+//console.log("test does exist", localStorage.getItem("detail-rebecca yarrosonyx storm"))
