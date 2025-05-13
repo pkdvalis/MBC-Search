@@ -1,9 +1,9 @@
 :root {
-  --blue: rgb(198, 231, 246);
-  --blue-green: #219ebcff;
-  --prussian-blue: rgb(20, 76, 104);
-  --hover: rgb(233, 191, 84);
-  --ut-orange: #fb8500ff;
+  --blue: rgb(162, 201, 219);
+  --blue-green: rgb(69, 172, 197);
+  --prussian-blue: rgb(38, 85, 108);
+  --hover: rgb(235, 212, 155);
+  --ut-orange: rgb(237, 147, 44);
 }
 
 /* Reset & fonts */
@@ -39,7 +39,7 @@ body {
   font-weight: bold;
   color: var(--hover);
   margin-bottom: 30px;
-  text-shadow: 2px 2px 5px var(--prussian-blue);
+  /*text-shadow: 2px 2px 1px var(--prussian-blue);*/
 }
 
 /* Form */
