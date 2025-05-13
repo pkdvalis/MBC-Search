@@ -17,7 +17,7 @@
 a {
   cursor: pointer;
   color: black;
-  text-decoration: none; /* no underline */
+  text-decoration: none;
 }
 
 a:hover {
@@ -39,7 +39,6 @@ body {
   font-weight: bold;
   color: var(--hover);
   margin-bottom: 30px;
-  /*text-shadow: 2px 2px 1px var(--prussian-blue);*/
 }
 
 /* Form */
@@ -126,7 +125,6 @@ body {
   transform: translateY(-10px);
 }
 
-/* Book Cover */
 .cover img {
   width: 100%;
   max-width: 150px;
@@ -135,7 +133,6 @@ body {
   margin: 15px auto;
 }
 
-/* Links (icons) */
 .links {
   display: flex;
   flex-wrap: wrap;
