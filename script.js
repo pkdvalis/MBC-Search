@@ -20,13 +20,15 @@ apikeyinput.addEventListener("change", () => {
 })*/
 
 function searchFor(author = "", title = "") {
+  modifyState(
+    `?author=${author.replace(" ", "+")}&title=${title.replace(" ", "+")}`
+  );
   titleText.text = `Mean Book Club Bestsellers List Search`;
   booksElement.style.display = "grid";
   booksElement.style.gridTemplateColumns =
     "repeat(auto-fit, minmax(350px, 1fr))";
 
   searchAuthor.value = author = author.replace(/J\.D\./g, "JD");
-
   searchTitle.value = title;
 
   if (!author && !title) {
@@ -94,6 +96,9 @@ function searchFor(author = "", title = "") {
 }
 
 const getDetails = (author = "", title = "") => {
+  modifyState(
+    `?author=${author.replace(" ", "+")}&title=${title.replace(" ", "+")}`
+  );
   searchAuthor.value = author;
   searchTitle.value = title;
   //element.style.removeProperty('background-color');
@@ -275,4 +280,25 @@ const displaySearchResults = (results, details = false) => {
   });
 };
 
+function processURL() {
+  let paramString = window.location.href.split("?")[1];
+  let queryString = new URLSearchParams(paramString);
+  console.log(queryString);
+  let a, t;
+  for (let pair of queryString.entries()) {
+    console.log(pair[0].toLowerCase(), pair[1]);
+    if (pair[0].toLowerCase() == "author") a = pair[1];
+    if (pair[0].toLowerCase() == "title") t = pair[1];
+    console.log(a, t);
+  }
+  console.log(a, t);
+  searchFor(a, t);
+}
+
+function modifyState(newURL) {
+  let stateObj = { id: Date.now() };
+  window.history.replaceState(stateObj, newURL, `${newURL}`);
+}
+
 previouslyOn();
+processURL();
