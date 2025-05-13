@@ -131,6 +131,11 @@ body {
   border-radius: 10px;
   display: block;
   margin: 15px auto;
+  filter: saturate(50%);
+}
+
+.cover img:hover {
+  filter: saturate(100%);
 }
 
 .links {
@@ -144,10 +149,12 @@ body {
 .links img {
   border-radius: 8px;
   transition: transform 0.3s;
+  filter: saturate(50%);
 }
 
 .links img:hover {
   transform: scale(1.2);
+  filter: saturate(100%);
 }
 
 @media (max-width: 600px) {
