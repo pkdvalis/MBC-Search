@@ -6,10 +6,6 @@ let search = document.getElementById("search");
 let searchAuthor = document.getElementById("author");
 let searchTitle = document.getElementById("title");
 let clearBtn = document.getElementById("clear");
-let searchTerms = new Set();
-let localSearchDb = {};
-let detailTerms = new Set();
-let localDetailDb = {};
 let titleText = document.getElementsByTagName("TITLE")[0];
 let booksElement = document.getElementById("books");
 
@@ -216,9 +212,8 @@ const displaySearchResults = (results, details = false) => {
           <div class="entry">
             <div class="content">
               <h2>
-              <a onclick="getDetails('${book.contributor.slice(3)}', '${
-      book.title
-    }')">
+              <a onclick="getDetails('${book.contributor.slice(3)}', 
+              '${book.title}')">
               ${book.title}</h2></a>
               <h4><a onclick="searchFor('${book.contributor.slice(3)}')">
               ${book.contributor}</a></h4>
