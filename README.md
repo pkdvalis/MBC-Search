@@ -1,6 +1,6 @@
 ﻿# MBC-Search
 
- This project is effectively dead since the API endpoint that I was using was shut down.
+Needs re-tooling since the API endpoint that I was using was shut down.
 
 >The New York Times Bestsellers List
 The Books API 
