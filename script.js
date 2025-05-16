@@ -73,7 +73,7 @@ function searchFor(author = "", title = "") {
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
         Hold your horses!<br /><br />
 
-        This project is effectively dead since the API endpoint that I was using was shut down.
+        Needs re-tooling since the API endpoint that I was using was shut down.
         
         "The New York Times The Books API Recent API Changes
     
@@ -141,7 +141,7 @@ const getDetails = (author = "", title = "") => {
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
         Hold your horses!<br /><br />
 
-        This project is effectively dead since the API endpoint that I was using was shut down.
+        Needs re-tooling since the API endpoint that I was using was shut down.
         
       "The New York Times  The Books API Recent API Changes
   
