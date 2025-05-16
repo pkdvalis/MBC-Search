@@ -8,8 +8,6 @@ The Books API
 
 >Note: On May 15, 2025 the Books API changed.
 
->The list and overview services return the full list of books, so pagination is no longer required.
->The book reviews service was removed. Use the Article Search API instead.
 >The best-sellers history service was removed.
 
 https://developer.nytimes.com/docs/books-product/1/overview
