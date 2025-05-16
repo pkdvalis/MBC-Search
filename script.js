@@ -1,5 +1,5 @@
-let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
-//let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
+//let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
 //let apikeyinput = document.getElementById("apikeyinput")
 //let apiKey = apikeyinput.value;
 let search = document.getElementById("search");
@@ -73,11 +73,17 @@ function searchFor(author = "", title = "") {
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
         Hold your horses!<br /><br />
 
-        The New York Times limits the number of requests that we can send to the database. 
-        By the time you're done reading this you can probably try again.<br /><br />
-
-        If not, just wait longer.
-      
+        This project is effectively dead since the API endpoint that I was using was shut down.
+        
+        "The New York Times The Books API Recent API Changes
+    
+        Note: On May 15, 2025 the Books API changed.
+    
+        The best-sellers history service was removed."
+        
+    
+    <a href="https://developer.nytimes.com/docs/books-product/1/overview">https://developer.nytimes.com/docs/books-product/1/overview</a>
+          
         `;
     });
 }
@@ -135,10 +141,17 @@ const getDetails = (author = "", title = "") => {
       <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
         Hold your horses!<br /><br />
 
-        The New York Times limits the number of requests that we can send to the database. 
-        By the time you're done reading this you can probably try again.<br /><br />
-
-        If not, just wait longer.
+        This project is effectively dead since the API endpoint that I was using was shut down.
+        
+      "The New York Times  The Books API Recent API Changes
+  
+      Note: On May 15, 2025 the Books API changed.
+  
+      The best-sellers history service was removed."
+      
+  
+  <a href="https://developer.nytimes.com/docs/books-product/1/overview">https://developer.nytimes.com/docs/books-product/1/overview</a>
+        
         `;
     });
 };
