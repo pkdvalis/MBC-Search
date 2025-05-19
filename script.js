@@ -1,19 +1,43 @@
-//let apiKey = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
-let apiKey = "ldD9shrU9AywvAcnn5IOs8QaHWgvfUvv";
-//let apikeyinput = document.getElementById("apikeyinput")
-//let apiKey = apikeyinput.value;
 let search = document.getElementById("search");
 let searchAuthor = document.getElementById("author");
 let searchTitle = document.getElementById("title");
 let clearBtn = document.getElementById("clear");
 let titleText = document.getElementsByTagName("TITLE")[0];
 let booksElement = document.getElementById("books");
+const files = ["nyt_bestsellers_flat_2.json", "nyt_bestsellers_flat.json"];
+const allBooks = [];
+let filesLoaded = false;
+const ONE_MONTH_AGO = Date.now() - 2629800000;
 
-/*
-apikeyinput.addEventListener("change", () => {
-  apiKey = apikeyinput.value
-  
-})*/
+async function loadFiles(author, title, details) {
+  if (filesLoaded) {
+    searchJSON(author, title, details);
+    return;
+  }
+
+  for (file of files) {
+    const url = file; // Adjust path if needed
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn(`Could not load ${url}`);
+        //continue;
+      }
+
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        allBooks.push(...data);
+      } else {
+        console.warn(`${url} is not an array`);
+      }
+    } catch (err) {
+      console.error(`Failed to fetch ${url}:`, err);
+    }
+  }
+  filesLoaded = true;
+  searchJSON(author, title, details);
+}
 
 function searchFor(author = "", title = "") {
   //update URL
@@ -37,55 +61,54 @@ function searchFor(author = "", title = "") {
   if (localSearch(author, title)) return;
 
   //if not found in local go fetch
-  fetch(
-    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
-      `${author}&title=${title}&api-key=${apiKey}`,
-    { method: "get" }
-  )
-    .then((response) => {
-      return response.json();
-    })
-    .then((nytimesBestSellers) => {
-      booksElement.innerHTML = "";
+  console.log("load JSON");
+  loadFiles(author, title, false);
+}
 
-      //no entries found
-      if (nytimesBestSellers.results.length == 0) {
-        booksElement.innerHTML = `
-      
-      <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"><br />
-        No entries found<br />
-        
-        `;
-      }
-      // add to local storage
-      nytimesBestSellers.results.push(Date.now());
-      localStorage.setItem(
-        `search-${author.toLowerCase()}${title.toLowerCase()}`,
-        JSON.stringify(nytimesBestSellers.results)
-      );
+function searchJSON(author, title, details = false) {
+  let found = allBooks.filter((book) => {
+    //TODO this logic needs updating
+    let hit = false;
+    if (author) {
+      hit = book.author.toLowerCase().includes(author.toLowerCase())
+        ? true
+        : false;
+    }
+    if (title) {
+      hit = book.title.toLowerCase().includes(title.toLowerCase())
+        ? true
+        : false;
+    }
+    return hit;
+  });
 
-      displaySearchResults(nytimesBestSellers.results);
-    })
-    .catch((error) => {
-      console.log(error);
-      booksElement.innerHTML = `
-      
-      <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
-        Hold your horses!<br /><br />
+  if (found.length) {
+    addToLocalStorage(author, title, found, details);
+  } else {
+    noEntriesFound();
+  }
+}
 
-        Needs re-tooling since the API endpoint that I was using was shut down.
-        
-        "The New York Times The Books API Recent API Changes
-    
-        Note: On May 15, 2025 the Books API changed.
-    
-        The best-sellers history service was removed."
-        
-    
-    <a href="https://developer.nytimes.com/docs/books-product/1/overview">https://developer.nytimes.com/docs/books-product/1/overview</a>
-          
-        `;
-    });
+function addToLocalStorage(author, title, results, details = false) {
+  results.push(Date.now());
+
+  localStorage.setItem(
+    `${
+      details ? "details-" : "search-"
+    }${author.toLowerCase()}${title.toLowerCase()}`,
+    JSON.stringify(results)
+  );
+
+  displaySearchResults(results, details);
+}
+
+function noEntriesFound() {
+  booksElement.innerHTML = `
+
+<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"><br />
+  No entries found<br />
+  
+  `;
 }
 
 const getDetails = (author = "", title = "") => {
@@ -106,68 +129,25 @@ const getDetails = (author = "", title = "") => {
   if (localSearch(author, title, true)) return;
 
   //if not found in local go fetch
-
-  fetch(
-    `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?contributor=` +
-      `${author}&title=${title}&api-key=${apiKey}`,
-    { method: "get" }
-  )
-    .then((response) => {
-      return response.json();
-    })
-    .then((nytimesBestSellers) => {
-      if (nytimesBestSellers.results.length == 0) {
-        booksElement.innerHTML = `
-      
-      <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"><br />
-        No entries found<br />
-        
-        `;
-      }
-
-      // add to local storage
-      nytimesBestSellers.results.push(Date.now());
-      localStorage.setItem(
-        `detail-${author.toLowerCase()}${title.toLowerCase()}`,
-        JSON.stringify(nytimesBestSellers.results)
-      );
-
-      displaySearchResults(nytimesBestSellers.results, true);
-    })
-    .catch((error) => {
-      console.log(error);
-      booksElement.innerHTML = `
-      
-      <img src="https://img.allw.mn/content/tm/gb/sirkxxrk594bd534d8e99856700530_520x277.gif"><br />
-        Hold your horses!<br /><br />
-
-        Needs re-tooling since the API endpoint that I was using was shut down.
-        
-      "The New York Times  The Books API Recent API Changes
-  
-      Note: On May 15, 2025 the Books API changed.
-  
-      The best-sellers history service was removed."
-      
-  
-  <a href="https://developer.nytimes.com/docs/books-product/1/overview">https://developer.nytimes.com/docs/books-product/1/overview</a>
-        
-        `;
-    });
+  console.log("load JSON");
+  loadFiles(author, title, true);
 };
 
 function localSearch(author, title, detail = false) {
   let key = `${
     detail ? "detail" : "search"
   }-${author.toLowerCase()}${title.toLowerCase()}`;
-  console.log(key);
+
   if (localStorage.getItem(key)) {
     console.log("local search hit");
 
-    displaySearchResults(
-      JSON.parse(localStorage.getItem(key)),
-      detail ? true : false
-    );
+    let result = JSON.parse(localStorage.getItem(key));
+    displaySearchResults(result, detail);
+
+    if (result[result.length - 1] < ONE_MONTH_AGO) {
+      console.log("local item purged")(localStorage.removeItem(key));
+    }
+
     return true;
   }
   return false;
@@ -204,7 +184,7 @@ const displaySearchResults = (results, details = false) => {
     if (typeof book == "number") return;
 
     if (!details && results.length == 2) {
-      getDetails(book.contributor.slice(3), book.title);
+      getDetails(book.contributor, book.title);
       return;
     }
 
@@ -214,31 +194,31 @@ const displaySearchResults = (results, details = false) => {
     let list = "none";
     if (book.ranks_history) {
       firstListing = book.ranks_history?.length - 1;
-      list = book.ranks_history[firstListing]?.display_name || "none";
+      list = book.ranks_history[firstListing]?.list_name || "none";
     }
 
-    let isbn = book.isbns[0]?.isbn13;
-    if (!isbn) isbn = "";
+    let isbn = book.primary_isbn13 || 0;
 
     //Basic Info
     let listing = `
           <div class="entry">
             <div class="content">
               <h2>
-              <a onclick="getDetails('${book.contributor.slice(3)}', 
+              <a onclick="getDetails('${book.contributor}', 
               '${book.title}')">
               ${book.title}</h2></a>
-              <h4><a onclick="searchFor('${book.contributor.slice(3)}')">
+              <h4><a onclick="searchFor('${book.contributor}')">
               ${book.contributor}</a></h4>
               <h4 class="publisher">${book.publisher}</h4>
             
             <div class="cover">
-              <a onclick="getDetails('${book.contributor.slice(3)}', '${
-      book.title
-    }')">
-              <img src="https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg" /></a>
+              <a onclick="getDetails('${book.contributor}', '${book.title}')">
+              <img src="https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg" />
+              
+              </a>
             </div>
             <p class="description">${book.description}</p>`;
+    //<img src="${book.book_image}" />
 
     //Search Links
     if (details) {
@@ -302,7 +282,6 @@ function processURL() {
 
   let a, t;
   for (let pair of queryString.entries()) {
-    //console.log(pair[0].toLowerCase(), pair[1]);
     if (pair[0].toLowerCase() == "author") a = pair[1];
     if (pair[0].toLowerCase() == "title") t = pair[1];
   }
