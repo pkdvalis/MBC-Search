@@ -4,14 +4,14 @@ let searchTitle = document.getElementById("title");
 let clearBtn = document.getElementById("clear");
 let titleText = document.getElementsByTagName("TITLE")[0];
 let booksElement = document.getElementById("books");
-const files = ["nyt_bestsellers_flat_2.json", "nyt_bestsellers_flat.json"];
+const files = ["consolidated_books.json"];
 const allBooks = [];
 let filesLoaded = false;
 const ONE_MONTH_AGO = Date.now() - 2629800000;
 
-async function loadFiles(author, title, details) {
-  if (filesLoaded) {
-    searchJSON(author, title, details);
+async function loadFiles(author = "", title = "", isbn = false) {
+  if (filesLoaded && (author || title || isbn)) {
+    searchJSON(author, title, isbn);
     return;
   }
 
@@ -36,7 +36,10 @@ async function loadFiles(author, title, details) {
     }
   }
   filesLoaded = true;
-  searchJSON(author, title, details);
+  if (author || title || isbn) {
+    searchJSON(author, title, isbn);
+    return;
+  }
 }
 
 function searchFor(author = "", title = "") {
@@ -65,7 +68,19 @@ function searchFor(author = "", title = "") {
   loadFiles(author, title, false);
 }
 
-function searchJSON(author, title, details = false) {
+function searchJSON(author = "", title = "", isbn = false) {
+  if (isbn) {
+    let found = allBooks.filter((book) => {
+      return book.primary_isbn13 == isbn;
+    });
+    if (found.length) {
+      addToLocalStorage(author, title, found, isbn);
+    } else {
+      noEntriesFound();
+    }
+    return;
+  }
+
   let found = allBooks.filter((book) => {
     //TODO this logic needs updating
     let hit = false;
@@ -83,23 +98,25 @@ function searchJSON(author, title, details = false) {
   });
 
   if (found.length) {
-    addToLocalStorage(author, title, found, details);
+    addToLocalStorage(author, title, found, isbn);
   } else {
     noEntriesFound();
   }
 }
 
-function addToLocalStorage(author, title, results, details = false) {
+function addToLocalStorage(author, title, results, isbn = false) {
   results.push(Date.now());
 
-  localStorage.setItem(
-    `${
-      details ? "details-" : "search-"
-    }${author.toLowerCase()}${title.toLowerCase()}`,
-    JSON.stringify(results)
-  );
+  let key = isbn ? isbn : `${author.toLowerCase()}${title.toLowerCase()}`;
 
-  displaySearchResults(results, details);
+  try {
+    localStorage.setItem(key, JSON.stringify(results));
+  } catch (error) {
+    localStorage.clear();
+    localStorage.setItem(key, JSON.stringify(results));
+  }
+  console.log("from JSON", results, isbn);
+  displaySearchResults(results, isbn);
 }
 
 function noEntriesFound() {
@@ -111,7 +128,7 @@ function noEntriesFound() {
   `;
 }
 
-const getDetails = (author = "", title = "") => {
+const getDetails = (author = "", title = "", isbn) => {
   modifyState(`?author=${author}&title=${title}`);
   searchAuthor.value = author;
   searchTitle.value = title;
@@ -126,23 +143,22 @@ const getDetails = (author = "", title = "") => {
   booksElement.innerHTML = "";
 
   //check local details
-  if (localSearch(author, title, true)) return;
+  if (localSearch(author, title, isbn)) return;
 
   //if not found in local go fetch
   console.log("load JSON");
-  loadFiles(author, title, true);
+  loadFiles(author, title, isbn);
 };
 
-function localSearch(author, title, detail = false) {
-  let key = `${
-    detail ? "detail" : "search"
-  }-${author.toLowerCase()}${title.toLowerCase()}`;
+function localSearch(author, title, isbn = false) {
+  let key = isbn ? isbn : `${author.toLowerCase()}${title.toLowerCase()}`;
 
   if (localStorage.getItem(key)) {
     console.log("local search hit");
 
     let result = JSON.parse(localStorage.getItem(key));
-    displaySearchResults(result, detail);
+    console.log("from local", result, isbn);
+    displaySearchResults(result, isbn);
 
     if (result[result.length - 1] < ONE_MONTH_AGO) {
       console.log("local item purged")(localStorage.removeItem(key));
@@ -175,20 +191,25 @@ const previouslyOn = () => {
   }
 };
 
-const displaySearchResults = (results, details = false) => {
+const displaySearchResults = (results, isbn = false) => {
   titleText.text = `Mean Book Club Bestsellers List Search`;
+  console.log(Boolean(isbn), isbn, results.length);
 
-  if (details) booksElement.innerHTML += `<div></div>`;
+  if (isbn) booksElement.innerHTML += `<div></div>`;
+  if (isbn) results = [results[0]];
 
   results.forEach((book) => {
-    if (typeof book == "number") return;
+    if (book.primary_isbn13 === "undefined") return;
 
-    if (!details && results.length == 2) {
-      getDetails(book.contributor, book.title);
+    if (typeof book == "number") return;
+    console.log("book isbn", book.primary_isbn13);
+
+    if (!isbn && results.length == 2) {
+      getDetails(book.contributor, book.title, book.primary_isbn13);
       return;
     }
 
-    if (details && book.title != searchTitle.value) return;
+    //if (isbn && book.title != searchTitle.value) return;
 
     let firstListing;
     let list = "none";
@@ -197,7 +218,7 @@ const displaySearchResults = (results, details = false) => {
       list = book.ranks_history[firstListing]?.list_name || "none";
     }
 
-    let isbn = book.primary_isbn13 || 0;
+    // isbn = book.primary_isbn13 || 0;
 
     //Basic Info
     let listing = `
@@ -205,15 +226,15 @@ const displaySearchResults = (results, details = false) => {
             <div class="content">
               <h2>
               <a onclick="getDetails('${book.contributor}', 
-              '${book.title}')">
+              '${book.title}', '${book.primary_isbn13}')">
               ${book.title}</h2></a>
               <h4><a onclick="searchFor('${book.contributor}')">
               ${book.contributor}</a></h4>
               <h4 class="publisher">${book.publisher}</h4>
             
             <div class="cover">
-              <a onclick="getDetails('${book.contributor}', '${book.title}')">
-              <img src="https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg" />
+              <a onclick="getDetails('${book.contributor}', '${book.title}', ${book.primary_isbn13})">
+              <img src="https://covers.openlibrary.org/b/isbn/${book.primary_isbn13}-M.jpg" />
               
               </a>
             </div>
@@ -221,7 +242,7 @@ const displaySearchResults = (results, details = false) => {
     //<img src="${book.book_image}" />
 
     //Search Links
-    if (details) {
+    if (isbn) {
       titleText.text = `${book.title} ${book.contributor} Mean Book Club Bestsellers List Search`;
       listing += `
           <div class="links">
@@ -236,13 +257,13 @@ const displaySearchResults = (results, details = false) => {
     }
 
     //Display first list book appears on
-    if (list != "none" && author && title && !details) {
+    if (list != "none" && author && title && !isbn) {
       listing += `<p>${book.ranks_history[firstListing]?.list_name}<br />
                     ${book.ranks_history[firstListing]?.published_date}</p>`;
     }
 
     //Display all lists
-    if (details) {
+    if (isbn) {
       if (list != "none") {
         listing += `<p>
         ${book.title} ${book.contributor} appears in the following Bestsellers lists:</p>
@@ -266,13 +287,13 @@ const displaySearchResults = (results, details = false) => {
       }
     }
 
-    if (!details)
+    if (!isbn)
       listing += `<br/><p class="clickfordetails">Click book title for details</p>`;
     listing += `</div></div>`;
     listing += `</div>`;
 
     booksElement.innerHTML += listing;
-    if (details) booksElement.innerHTML += `<div></div>`;
+    if (isbn) booksElement.innerHTML += `<div></div>`;
   });
 };
 
@@ -300,3 +321,4 @@ function modifyState(newURL) {
 
 previouslyOn();
 processURL();
+loadFiles();
