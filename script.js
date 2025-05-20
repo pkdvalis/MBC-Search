@@ -270,9 +270,7 @@ const displaySearchResults = (results, isbn = false) => {
         <div id="bestsellerlists">
         `;
         for (let i in book.ranks_history) {
-          let listlinkname = book.ranks_history[i].list_name
-            .toLowerCase()
-            .replaceAll(" ", "-");
+          let listlinkname = book.ranks_history[i].list_name_encoded;
           let listlinkdate = book.ranks_history[i].published_date.replaceAll(
             "-",
             "/"
