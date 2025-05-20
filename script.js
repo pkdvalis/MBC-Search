@@ -293,6 +293,7 @@ const displaySearchResults = (results, isbn = false) => {
     booksElement.innerHTML += listing;
     if (isbn) booksElement.innerHTML += `<div></div>`;
   });
+  window.scrollTo(0, 0);
 };
 
 function processURL() {
