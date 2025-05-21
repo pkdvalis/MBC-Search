@@ -82,19 +82,10 @@ function searchJSON(author = "", title = "", isbn = false) {
   }
 
   let found = allBooks.filter((book) => {
-    //TODO this logic needs updating
-    let hit = false;
-    if (author) {
-      hit = book.author.toLowerCase().includes(author.toLowerCase())
-        ? true
-        : false;
-    }
-    if (title) {
-      hit = book.title.toLowerCase().includes(title.toLowerCase())
-        ? true
-        : false;
-    }
-    return hit;
+    return (
+      book.author.toLowerCase().includes(author.toLowerCase()) &&
+      book.title.toLowerCase().includes(title.toLowerCase())
+    );
   });
 
   if (found.length) {
