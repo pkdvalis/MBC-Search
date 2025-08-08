@@ -42,6 +42,13 @@ async function loadFiles(author = "", title = "", isbn = false) {
   }
 }
 
+const cleanAuthorBy = (author) => {
+  if (author.slice(0, 3) == "by ") {
+    return (author = author.slice(3));
+  }
+  return author;
+};
+
 function searchFor(author = "", title = "") {
   //update URL
   modifyState(`?author=${author}&title=${title}`);
@@ -120,6 +127,7 @@ function noEntriesFound() {
 }
 
 const getDetails = (author = "", title = "", isbn) => {
+  author = cleanAuthorBy(author);
   modifyState(`?author=${author}&title=${title}`);
   searchAuthor.value = author;
   searchTitle.value = title;
@@ -176,6 +184,7 @@ const previouslyOn = () => {
     '<p id="previouslyon" >Previously on Mean Book Club:</p>';
   for (let book of previouslyList) {
     let newLink = document.createElement("a");
+    book.author = cleanAuthorBy(book.author);
     newLink.onclick = () => searchFor(`${book.author}`, `${book.title}`);
     newLink.innerText = `${book.title} by ${book.author}`;
     booksElement.appendChild(newLink);
@@ -211,6 +220,7 @@ const displaySearchResults = (results, isbn = false) => {
 
     // isbn = book.primary_isbn13 || 0;
 
+    book.contributor = cleanAuthorBy(book.contributor);
     //Basic Info
     let listing = `
           <div class="entry">
@@ -233,6 +243,7 @@ const displaySearchResults = (results, isbn = false) => {
     //<img src="${book.book_image}" />
 
     //Search Links
+    book.author = cleanAuthorBy(book.author);
     if (isbn) {
       titleText.text = `${book.title} ${book.contributor} Mean Book Club Bestsellers List Search`;
       listing += `
