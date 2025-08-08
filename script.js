@@ -169,12 +169,12 @@ function localSearch(author, title, isbn = false) {
 }
 
 search.addEventListener("submit", (e) => {
-  e.preventDefault();
+  //e.preventDefault();
   searchFor(searchAuthor.value, searchTitle.value);
 });
 
 clearBtn.addEventListener("click", (e) => {
-  e.preventDefault();
+  //e.preventDefault();
   searchFor();
 });
 
@@ -313,7 +313,7 @@ function processURL() {
 
 function modifyState(newURL) {
   let stateObj = { id: Date.now() };
-  window.history.replaceState(
+  window.history.pushState(
     stateObj,
     newURL.replaceAll(" ", "+"),
     `${newURL.replaceAll(" ", "+")}`
@@ -323,3 +323,7 @@ function modifyState(newURL) {
 previouslyOn();
 processURL();
 loadFiles();
+
+window.addEventListener("popstate", () => {
+  processURL();
+});
