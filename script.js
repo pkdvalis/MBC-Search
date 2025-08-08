@@ -268,7 +268,7 @@ const displaySearchResults = (results, isbn = false) => {
     if (isbn) {
       if (list != "none") {
         listing += `<p>
-        ${book.title} ${book.contributor} appears in the following Bestsellers lists:</p>
+        ${book.title} by ${book.contributor} appears in the following Bestsellers lists:</p>
         <div id="bestsellerlists">
         `;
         for (let i in book.ranks_history) {
