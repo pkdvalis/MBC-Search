@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <script>
+      //check which years/months are in the data file
+      async function check() {
+        let res = await fetch("./consolidated_books.json");
+        const data = await res.json();
+        console.log(data[0]);
+        let years = new Set();
+        for (book of data) {
+          for (rank of book.ranks_history) {
+            years.add(rank.published_date.slice(0, 7));
+          }
+        }
+        years = Array.from(years).sort(
+          (a, b) => Number(a.replace("-", "")) - Number(b.replace("-", ""))
+        );
+        console.log(years);
+      }
+
+      check();
+    </script>
+  </body>
+</html>

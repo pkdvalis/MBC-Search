@@ -4,6 +4,7 @@ let searchTitle = document.getElementById("title");
 let clearBtn = document.getElementById("clear");
 let titleText = document.getElementsByTagName("TITLE")[0];
 let booksElement = document.getElementById("books");
+let WEBSITE_TITLE = "Mean Book Club Bestsellers List Search (2009-Present)";
 const files = ["consolidated_books.json"];
 const allBooks = [];
 let filesLoaded = false;
@@ -63,7 +64,7 @@ const cleanAuthorBy = (author) => {
 function searchFor(author = "", title = "") {
   //update URL
   modifyState(`?author=${author}&title=${title}`);
-  titleText.text = `Mean Book Club Bestsellers List Search`;
+  titleText.text = WEBSITE_TITLE;
   booksElement.style.display = "grid";
   booksElement.style.gridTemplateColumns =
     "repeat(auto-fit, minmax(350px, 1fr))";
@@ -197,7 +198,7 @@ clearBtn.addEventListener("click", (e) => {
 });
 
 const previouslyOn = () => {
-  titleText.text = `Mean Book Club Bestsellers List Search`;
+  titleText.text = WEBSITE_TITLE;
   booksElement.innerHTML =
     '<p id="previouslyon" >Previously on Mean Book Club:</p>';
   for (let book of previouslyList) {
@@ -211,7 +212,7 @@ const previouslyOn = () => {
 
 const displaySearchResults = async (results, isbn = false) => {
   console.log(results);
-  titleText.text = `Mean Book Club Bestsellers List Search`;
+  titleText.text = WEBSITE_TITLE;
   console.log(Boolean(isbn), isbn, results.length);
 
   if (isbn) booksElement.innerHTML += `<div></div>`;
@@ -266,7 +267,7 @@ const displaySearchResults = async (results, isbn = false) => {
     //Search Links
     book.author = cleanAuthorBy(book.author);
     if (isbn) {
-      titleText.text = `${book.title} ${book.contributor} Mean Book Club Bestsellers List Search`;
+      titleText.text = `${book.title} ${book.contributor} ${WEBSITE_TITLE}`;
       listing += `
           <div class="links">
           <a href="https://www.audible.com/search?keywords=${book.title} ${book.author}" target="_blank"><img src="https://favicon.im/audible.com?larger=true" height=50 alt="audible.com favicon (large)" /></a>

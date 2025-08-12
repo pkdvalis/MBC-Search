@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Book Deduplicator</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      input {
+        margin-bottom: 10px;
+      }
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📚 Book JSON Deduplicator</h1>
+    <p>
+      Select two JSON files containing arrays of book objects with
+      <code>primary_isbn13</code>:
+    </p>
+
+    <input type="file" id="file1" accept=".json" /><br />
+    <input type="file" id="file2" accept=".json" /><br />
+    <button onclick="processFiles()">Process & Download</button>
+
+    <h2>Result:</h2>
+    <pre id="output">Waiting for files...</pre>
+
+    <script>
+      async function readFileAsJSON(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const json = JSON.parse(e.target.result);
+              resolve(json);
+            } catch (err) {
+              reject(`Invalid JSON in ${file.name}`);
+            }
+          };
+          reader.onerror = () => reject(`Error reading file: ${file.name}`);
+          reader.readAsText(file);
+        });
+      }
+
+      async function processFiles() {
+        const file1 = document.getElementById("file1").files[0];
+        const file2 = document.getElementById("file2").files[0];
+        const output = document.getElementById("output");
+
+        if (!file1 || !file2) {
+          output.textContent = "Please upload both JSON files.";
+          return;
+        }
+
+        try {
+          const [books1, books2] = await Promise.all([
+            readFileAsJSON(file1),
+            readFileAsJSON(file2),
+          ]);
+
+          const allBooks = [...books1, ...books2];
+          const deduplicatedMap = new Map();
+
+          allBooks.forEach((book) => {
+            if (book.primary_isbn13) {
+              deduplicatedMap.set(book.primary_isbn13, book);
+            }
+          });
+
+          const result = Array.from(deduplicatedMap.values());
+          //output.textContent = JSON.stringify(result, null, 2);
+
+          // Create downloadable JSON file
+          const blob = new Blob([JSON.stringify(result, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "consolidated_books.json";
+          a.textContent = "📥 Download consolidated_books.json";
+          a.style.display = "block";
+          a.style.marginTop = "10px";
+          document.body.appendChild(a);
+        } catch (error) {
+          output.textContent = error.toString();
+        }
+      }
+    </script>
+  </body>
+</html>

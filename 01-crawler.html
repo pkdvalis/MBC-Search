@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NYT Bestseller Crawler</title>
+  </head>
+  <body>
+    <h1>NYT Bestsellers Crawler</h1>
+    <button onclick="startCrawl()">Start / Resume Crawl</button>
+    <button onclick="clearData()">Clear All Data</button>
+    <div id="status"></div>
+    <div id="downloads"></div>
+
+    <script>
+      const API_KEY = "W7gIJGjUUnOV3a5Msp8VcyIU02AWiXz7";
+
+      const BASE_URL =
+        "https://api.nytimes.com/svc/books/v3/lists/overview.json";
+      const MAX_REQUESTS = 200; // adjust up to 500/day
+      const REQUEST_DELAY_MS = 13_000;
+      const START_DATE = localStorage.getItem("nyt_last_published_date")
+        ? JSON.parse(localStorage.getItem("nyt_last_published_date"))
+        : "2012-08-17";
+      const bookIndex = {}; // Deduplicated by primary_isbn13
+
+      function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function fetchList(publishedDate = "") {
+        console.log("Fetching...");
+        const url =
+          `${BASE_URL}?api-key=${API_KEY}` +
+          (publishedDate ? `&published_date=${publishedDate}` : "");
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`API request failed: ${res.statusText}`);
+        return res.json();
+      }
+
+      async function crawlLists(publishedDate = "", count = 0) {
+        console.log("crawl starting...");
+        if (count >= MAX_REQUESTS) {
+          console.log(`Max requests (${MAX_REQUESTS}) reached.`);
+          localStorage.setItem(
+            "nyt_last_published_date",
+            JSON.stringify(publishedDate)
+          );
+          exportToJsonFile();
+          return;
+        }
+
+        try {
+          const data = await fetchList(publishedDate);
+          const {
+            published_date,
+            bestsellers_date,
+            previous_published_date,
+            lists,
+          } = data.results;
+
+          lists.forEach((list) => {
+            const { list_name, list_name_encoded } = list;
+
+            list.books.forEach((book) => {
+              const {
+                primary_isbn13,
+                author,
+                book_image,
+                contributor,
+                description,
+                publisher,
+                rank,
+                title,
+              } = book;
+
+              if (!primary_isbn13) return;
+
+              if (!bookIndex[primary_isbn13]) {
+                bookIndex[primary_isbn13] = {
+                  author,
+                  book_image,
+                  contributor,
+                  description,
+                  primary_isbn13,
+                  publisher,
+                  title,
+                  ranks_history: [],
+                };
+              }
+
+              bookIndex[primary_isbn13].ranks_history.push({
+                list_name,
+                list_name_encoded,
+                published_date,
+              });
+            });
+          });
+
+          console.log(`Fetched ${published_date}, waiting 13 seconds...`);
+          await delay(REQUEST_DELAY_MS);
+          await crawlLists(previous_published_date, count + 1);
+        } catch (err) {
+          console.error("Error during crawl:", err.message);
+          localStorage.setItem(
+            "nyt_last_published_date",
+            JSON.stringify(publishedDate)
+          );
+          exportToJsonFile();
+        }
+      }
+
+      function exportToJsonFile() {
+        const allBooks = Object.values(bookIndex);
+        const blob = new Blob([JSON.stringify(allBooks, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "nyt_bestsellers_flat.json";
+        a.click();
+        URL.revokeObjectURL(url);
+
+        console.log(
+          `Exported ${allBooks.length} books to nyt_bestsellers_flat.json`
+        );
+      }
+
+      // Start crawl
+      crawlLists(START_DATE);
+    </script>
+  </body>
+</html>

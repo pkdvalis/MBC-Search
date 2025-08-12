@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Book Consolidator</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 1rem;
+      }
+      input,
+      button {
+        margin: 0.5rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Book Consolidator</h1>
+    <input type="file" id="fileInput" accept=".json" />
+    <button id="processBtn">Process & Download</button>
+
+    <script>
+      document.getElementById("processBtn").addEventListener("click", () => {
+        const fileInput = document.getElementById("fileInput");
+        if (!fileInput.files.length) {
+          alert("Select a JSON file first.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const books = JSON.parse(e.target.result);
+            const consolidated = {};
+
+            books.forEach((book) => {
+              const key = book.author + "||" + book.title;
+              if (!consolidated[key]) {
+                consolidated[key] = {
+                  author: book.author,
+                  title: book.title,
+                  book_image: book.book_image,
+                  contributor: book.contributor,
+                  description: book.description,
+                  publisher: book.publisher,
+                  primary_isbn13: new Set(),
+                  ranks_history: [],
+                };
+              }
+              consolidated[key].primary_isbn13.add(book.primary_isbn13);
+
+              // Merge ranks_history, avoiding duplicates
+              const existingRanks = new Set(
+                consolidated[key].ranks_history.map(
+                  (r) => r.list_name + r.published_date
+                )
+              );
+              book.ranks_history.forEach((rank) => {
+                const rankKey = rank.list_name + rank.published_date;
+                if (!existingRanks.has(rankKey)) {
+                  consolidated[key].ranks_history.push(rank);
+                  existingRanks.add(rankKey);
+                }
+              });
+            });
+
+            // Convert Sets to arrays
+            const result = Object.values(consolidated).map((book) => ({
+              ...book,
+              primary_isbn13: Array.from(book.primary_isbn13),
+            }));
+
+            // Trigger download
+            const blob = new Blob([JSON.stringify(result, null, 2)], {
+              type: "application/json",
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "consolidated_books.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert("File processed and downloaded successfully.");
+          } catch (err) {
+            alert("Error: " + err.message);
+          }
+        };
+        reader.readAsText(fileInput.files[0]);
+      });
+    </script>
+  </body>
+</html>

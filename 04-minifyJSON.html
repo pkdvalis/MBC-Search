@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JSON Minifier — Drop File Mode</title>
+    <style>
+      body {
+        background: #0f1724;
+        color: #e6eef6;
+        font-family: sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      h1 {
+        margin-top: 0;
+      }
+      .dropzone {
+        border: 2px dashed #10b981;
+        border-radius: 8px;
+        padding: 50px;
+        text-align: center;
+        font-size: 18px;
+        color: #94a3b8;
+        cursor: pointer;
+      }
+      button {
+        padding: 10px 14px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .primary {
+        background: #10b981;
+        color: #052018;
+      }
+      .status {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .error {
+        color: #ff7b7b;
+      }
+      .success {
+        color: #8ef0b0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>JSON Minifier (Drop File Mode)</h1>
+    <p>
+      Drop a JSON file below to minify and download it. The content will not be
+      displayed.
+    </p>
+    <div id="dropzone" class="dropzone">Drop JSON file here</div>
+    <button id="clearBtn">Clear</button>
+    <div class="status" id="status">Ready.</div>
+
+    <script>
+      (function () {
+        const dropzone = document.getElementById("dropzone");
+        const clearBtn = document.getElementById("clearBtn");
+        const status = document.getElementById("status");
+        let fileContent = "";
+
+        function setStatus(msg, cls) {
+          status.textContent = msg;
+          status.className = cls || "";
+        }
+
+        function removeTrailingCommas(text) {
+          let out = "",
+            inStr = false,
+            esc = false;
+          for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            if (ch === '"' && !esc) inStr = !inStr;
+            if (!inStr && (ch === "}" || ch === "]")) {
+              let j = out.length - 1;
+              while (j >= 0 && /\s/.test(out[j])) j--;
+              if (out[j] === ",") out = out.slice(0, j);
+            }
+            esc = ch === "\\" && !esc;
+            out += ch;
+          }
+          return out;
+        }
+
+        function minifyAndDownload(raw) {
+          if (!raw) {
+            setStatus("No file loaded.", "error");
+            return;
+          }
+          setStatus("Processing...");
+          try {
+            const cleaned = removeTrailingCommas(raw);
+            const obj = JSON.parse(cleaned);
+            const minified = JSON.stringify(obj);
+            const blob = new Blob([minified], {
+              type: "application/json;charset=utf-8",
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "minified.json";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            setStatus("Download started.", "success");
+          } catch (err) {
+            setStatus("Parse error: " + err.message, "error");
+          }
+        }
+
+        dropzone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          dropzone.style.borderColor = "#8ef0b0";
+        });
+        dropzone.addEventListener("dragleave", () => {
+          dropzone.style.borderColor = "#10b981";
+        });
+        dropzone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          dropzone.style.borderColor = "#10b981";
+          const f = e.dataTransfer.files && e.dataTransfer.files[0];
+          if (!f) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            fileContent = reader.result;
+            setStatus("File loaded: " + f.name, "success");
+            minifyAndDownload(fileContent);
+          };
+          reader.readAsText(f, "utf-8");
+        });
+
+        clearBtn.addEventListener("click", () => {
+          fileContent = "";
+          setStatus("Cleared.");
+        });
+      })();
+    </script>
+  </body>
+</html>
