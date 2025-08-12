@@ -99,8 +99,9 @@ async function searchFor(author = "", title = "") {
 }
 
 async function searchJSON(author = "", title = "", isbn = false) {
+  /*
   if (isbn) {
-    let found = allBooks.filter((book) => {
+    let found = await allBooks.filter((book) => {
       return book.primary_isbn13 == isbn;
     });
     if (found.length) {
@@ -113,8 +114,9 @@ async function searchJSON(author = "", title = "", isbn = false) {
     }
     return;
   }
+    */
 
-  let found = allBooks.filter((book) => {
+  let found = await allBooks.filter((book) => {
     return (
       book.author.toLowerCase().includes(author.toLowerCase()) &&
       book.title.toLowerCase().includes(title.toLowerCase())
@@ -147,10 +149,8 @@ function addToLocalStorage(author, title, results, isbn = false) {
 
 function noEntriesFound() {
   booksElement.innerHTML = `
-
-<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"><br />
-  No entries found<br />
-  
+<p class="toptext">No entries found<br />
+<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2JvOWsybzVsYTJ4bDVlNDhkYmFqeWp5MWFseXpvNmNoMWhjZmgxNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8J2MOphsMnQUo/giphy.gif"></p>
   `;
 }
 
