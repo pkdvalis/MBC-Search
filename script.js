@@ -93,7 +93,7 @@ async function searchJSON(author = "", title = "", isbn = false) {
       return book.primary_isbn13 == isbn;
     });
     if (found.length) {
-      for (const book in found) {
+      for (const book of found) {
         book.book_image = await findImage(book);
       }
       addToLocalStorage(author, title, found, isbn);
@@ -111,7 +111,7 @@ async function searchJSON(author = "", title = "", isbn = false) {
   });
 
   if (found.length) {
-    for (const book in found) {
+    for (const book of found) {
       book.book_image = await findImage(book);
     }
     addToLocalStorage(author, title, found, isbn);
