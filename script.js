@@ -23,7 +23,7 @@ function titleCase(str) {
 
 async function loadFiles(author = "", title = "", isbn = false) {
   if (filesLoaded && (author || title || isbn)) {
-    searchJSON(author, title, isbn);
+    await searchJSON(author, title, isbn);
     return;
   }
 
@@ -34,7 +34,7 @@ async function loadFiles(author = "", title = "", isbn = false) {
       const res = await fetch(url);
       if (!res.ok) {
         console.warn(`Could not load ${url}`);
-        //continue;
+        continue;
       }
 
       const data = await res.json();
@@ -49,7 +49,7 @@ async function loadFiles(author = "", title = "", isbn = false) {
   }
   filesLoaded = true;
   if (author || title || isbn) {
-    searchJSON(author, title, isbn);
+    await searchJSON(author, title, isbn);
     return;
   }
 }
@@ -61,7 +61,7 @@ const cleanAuthorBy = (author) => {
   return author;
 };
 
-function searchFor(author = "", title = "") {
+async function searchFor(author = "", title = "") {
   //update URL
   modifyState(`?author=${author}&title=${title}`);
   titleText.text = WEBSITE_TITLE;
@@ -84,7 +84,7 @@ function searchFor(author = "", title = "") {
 
   //if not found in local go fetch
   console.log("load JSON");
-  loadFiles(author, title, false);
+  await loadFiles(author, title, false);
 }
 
 async function searchJSON(author = "", title = "", isbn = false) {
@@ -143,7 +143,7 @@ function noEntriesFound() {
   `;
 }
 
-const getDetails = (author = "", title = "", isbn) => {
+const getDetails = async (author = "", title = "", isbn) => {
   //get rid of "by"
   author = cleanAuthorBy(author);
   //update URL and UI
@@ -165,7 +165,7 @@ const getDetails = (author = "", title = "", isbn) => {
 
   //if not found in local go fetch
   console.log("load JSON");
-  loadFiles(author, title, isbn);
+  await loadFiles(author, title, isbn);
 };
 
 function localSearch(author, title, isbn = false) {
