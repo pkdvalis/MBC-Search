@@ -9,6 +9,13 @@ const files = ["consolidated_books.json"];
 const allBooks = [];
 let filesLoaded = false;
 const ONE_MONTH_AGO = Date.now() - 2629800000;
+const searchGifs = [
+  "belle.gif",
+  "cat-search.gif",
+  "dance-search.gif",
+  "smell-search.gif",
+  "wizard.gif",
+];
 
 function titleCase(str) {
   str = str.toLowerCase();
@@ -77,7 +84,11 @@ async function searchFor(author = "", title = "") {
     return;
   }
 
-  booksElement.innerHTML = `<p class="toptext">Searching... </p>`;
+  searchImage = searchGifs[Math.floor(Math.random() * searchGifs.length)];
+
+  booksElement.innerHTML = `<p class="toptext">Searching...<br/> 
+  <img src="images/${searchImage}">
+  </p>`;
 
   //check local search terms
   if (localSearch(author, title)) return;
@@ -189,7 +200,7 @@ function localSearch(author, title, isbn = false) {
 
 search.addEventListener("submit", (e) => {
   e.preventDefault();
-  booksElement.innerHTML = `<p class="toptext">Searching... </p>`;
+  //  booksElement.innerHTML = `<p class="toptext">Searching... </p>`;
   searchFor(searchAuthor.value, searchTitle.value);
 });
 
