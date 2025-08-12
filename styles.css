@@ -33,7 +33,7 @@ body {
 }
 
 /* Title */
-#toptext {
+.toptext {
   text-align: center;
   font-size: 2rem;
   font-weight: bold;

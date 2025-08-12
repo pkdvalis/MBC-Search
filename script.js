@@ -77,7 +77,7 @@ async function searchFor(author = "", title = "") {
     return;
   }
 
-  booksElement.innerHTML = "";
+  booksElement.innerHTML = `<p class="toptext">Searching... </p>`;
 
   //check local search terms
   if (localSearch(author, title)) return;
@@ -189,11 +189,12 @@ function localSearch(author, title, isbn = false) {
 
 search.addEventListener("submit", (e) => {
   e.preventDefault();
+  booksElement.innerHTML = `<p class="toptext">Searching... </p>`;
   searchFor(searchAuthor.value, searchTitle.value);
 });
 
 clearBtn.addEventListener("click", (e) => {
-  e.preventDefault();
+  //e.preventDefault();
   searchFor();
 });
 
@@ -211,7 +212,7 @@ const previouslyOn = () => {
 };
 
 const displaySearchResults = async (results, isbn = false) => {
-  console.log(results);
+  booksElement.innerHTML = "";
   titleText.text = WEBSITE_TITLE;
   console.log(Boolean(isbn), isbn, results.length);
 
