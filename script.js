@@ -219,9 +219,9 @@ const displaySearchResults = async (results, isbn = false) => {
   if (isbn) results = [results[0]];
 
   for (const book of results) {
-    if (book.primary_isbn13 === "undefined") return;
+    if (book.primary_isbn13 === "undefined") continue;
 
-    if (typeof book == "number") return;
+    if (typeof book == "number") continue;
     console.log("book isbn", book.primary_isbn13);
 
     if (!isbn && results.length == 2) {
